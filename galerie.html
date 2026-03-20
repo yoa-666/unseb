@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <base href="./"/>
+  <title>Galerie | UNSEB Adjarra</title>
+  <link rel="stylesheet" href="unseb.css"/>
+  <style>
+    body{background:var(--gris)}
+    .gallery-wrap{max-width:1100px;margin:0 auto;padding:40px 6%}
+    .gal-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+    .gal-filter{padding:7px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:.82rem;font-weight:600;cursor:pointer;transition:all var(--t)}
+    .gal-filter.active,.gal-filter:hover{border-color:var(--rouge-vif);background:rgba(200,16,46,.07);color:var(--rouge-vif)}
+    .gal-grid{columns:3 240px;gap:14px}
+    .gal-item{break-inside:avoid;margin-bottom:14px;border-radius:var(--rl);overflow:hidden;position:relative;cursor:pointer;background:var(--gris2)}
+    .gal-item img{width:100%;display:block;transition:transform .5s ease}
+    .gal-item:hover img{transform:scale(1.04)}
+    .gal-item-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,transparent 50%);opacity:0;transition:opacity .3s}
+    .gal-item:hover .gal-item-overlay{opacity:1}
+    .gal-item-info{position:absolute;bottom:12px;left:14px;right:14px;color:#fff;opacity:0;transition:opacity .3s}
+    .gal-item:hover .gal-item-info{opacity:1}
+    .gal-item-title{font-weight:700;font-size:.88rem;margin-bottom:2px}
+    .gal-item-cat{font-size:.72rem;opacity:.75}
+    .gal-video{position:relative}
+    .gal-video-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:54px;height:54px;background:rgba(200,16,46,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#fff;backdrop-filter:blur(4px)}
+    /* Lightbox */
+    .lightbox{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.95);align-items:center;justify-content:center;flex-direction:column}
+    .lightbox.open{display:flex}
+    .lb-img{max-width:90vw;max-height:80vh;border-radius:var(--r);object-fit:contain}
+    .lb-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:1.5rem;cursor:pointer;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .2s}
+    .lb-close:hover{background:rgba(255,255,255,.2)}
+    .lb-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:none;color:#fff;font-size:1.5rem;cursor:pointer;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .2s}
+    .lb-nav:hover{background:rgba(255,255,255,.2)}
+    .lb-prev{left:16px}.lb-next{right:16px}
+    .lb-caption{margin-top:14px;color:rgba(255,255,255,.7);font-size:.88rem;text-align:center}
+    /* Upload zone for admin */
+    .admin-upload{background:#fff;border-radius:var(--rl);border:2px dashed var(--border);padding:28px;text-align:center;margin-bottom:28px;cursor:pointer;transition:all var(--t)}
+    .admin-upload:hover{border-color:var(--rouge-vif);background:rgba(200,16,46,.04)}
+    @media(max-width:680px){.gal-grid{columns:2 160px}}
+    @media(max-width:420px){.gal-grid{columns:1}}
+  </style>
+</head>
+<body>
+<header class="navbar">
+  <div class="logo-wrap"><img src="logo.jpeg" alt="Logo UNSEB"/><div class="logo-text">UNSEB <span>Adjarra</span></div></div>
+  <nav class="nav-links" id="navLinks">
+    <a href="unseb.html" data-page="accueil">Accueil</a>
+    <a href="apropos.html" data-page="apropos">À propos</a>
+    <a href="activites.html" data-page="activites">Activités</a>
+    <a href="etudes.html" data-page="etudes">📚 Études</a>
+    <a href="calendrier.html" data-page="calendrier">Calendrier</a>
+    <a href="galerie.html" data-page="galerie">Galerie</a>
+    <a href="ressources.html" data-page="ressources">Ressources</a>
+    <a href="sondages.html" data-page="sondages">Sondages</a>
+    <a href="chat.html" data-page="chat" id="navChat">💬 Chat</a>
+    <a href="contact.html" data-page="contact">Contact</a>
+    <a href="membre.html" class="nav-cta" data-page="membre">🪪 Carte membre</a>
+  </nav>
+  <div id="navSession" style="display:flex;align-items:center;gap:8px;margin-left:4px"></div>
+  <button type="button" class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+</header>
+
+<section class="page-hero">
+  <div class="breadcrumb">Accueil → <span>Galerie</span></div>
+  <h1>Galerie photos & vidéos</h1>
+  <p>Revivez les moments forts de l'UNSEB Adjarra — événements, activités et vie du campus.</p>
+</section>
+
+<div class="gallery-wrap">
+  <!-- Admin upload -->
+  <div id="adminUpload" style="display:none">
+    <div class="admin-upload" onclick="document.getElementById('galInput').click()">
+      <input type="file" id="galInput" accept="image/*,video/mp4" multiple style="display:none" onchange="handleUpload(this)"/>
+      <div style="font-size:2rem;margin-bottom:10px">📸</div>
+      <div style="font-weight:700;margin-bottom:4px">Ajouter des photos / vidéos</div>
+      <div style="font-size:.82rem;color:var(--texte2)">JPG, PNG, MP4 · Cliquez pour sélectionner</div>
+    </div>
+  </div>
+
+  <div class="gal-filters">
+    <div class="gal-filter active" onclick="setFilter('all',this)">Tout</div>
+    <div class="gal-filter" onclick="setFilter('CECAL',this)">CECAL</div>
+    <div class="gal-filter" onclick="setFilter('COGHERES',this)">COGHERES</div>
+    <div class="gal-filter" onclick="setFilter('Académique',this)">Académique</div>
+    <div class="gal-filter" onclick="setFilter('Campus',this)">Campus</div>
+    <div class="gal-filter" onclick="setFilter('Événement',this)">Événements</div>
+  </div>
+
+  <div class="gal-grid" id="galGrid">
+    <!-- Built-in photos from the site -->
+  </div>
+  <div id="galEmpty" style="display:none;text-align:center;padding:60px 20px;color:var(--texte3)">
+    <div style="font-size:3rem;margin-bottom:14px;opacity:.3">🖼️</div>
+    <p>Aucune photo dans cette catégorie.</p>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLB(event)">
+  <button type="button" class="lb-close" onclick="closeLightbox()">✕</button>
+  <button type="button" class="lb-nav lb-prev" onclick="navLB(-1)">‹</button>
+  <img class="lb-img" id="lbImg" src="" alt=""/>
+  <button type="button" class="lb-nav lb-next" onclick="navLB(1)">›</button>
+  <div class="lb-caption" id="lbCaption"></div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="footer-logo-wrap"><img src="logo.jpeg" alt="Logo UNSEB"/><div class="footer-logo-text">UNSEB <span>Adjarra</span></div></div><p>Union Nationale des Scolaires et Étudiants du Bénin — Sous-section d'Adjarra.</p></div>
+    <div class="footer-col"><h4>Navigation</h4><ul><li><a href="unseb.html">Accueil</a></li><li><a href="apropos.html">À propos</a></li><li><a href="activites.html">Activités</a></li><li><a href="calendrier.html">Calendrier</a></li><li><a href="galerie.html">Galerie</a></li></ul></div>
+    <div class="footer-col"><h4>Espace étudiant</h4><ul><li><a href="dashboard.html">Mon dashboard</a></li><li><a href="profil.html">Mon profil</a></li><li><a href="sondages.html">Sondages</a></li><li><a href="ressources.html">Ressources</a></li><li><a href="chat.html">💬 Chat</a></li><li><a href="membre.html">🪪 Carte membre</a></li></ul></div>
+    <div class="footer-col"><h4>Contact</h4><ul><li><a href="tel:0154325324">📞 01 54 32 53 24</a></li><li><a href="https://wa.me/22901543253240" target="_blank">💬 WhatsApp</a></li><li><a href="mailto:unseb.adjarra@gmail.com">✉ unseb.adjarra@gmail.com</a></li><li><a href="contact.html">Formulaire</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 UNSEB Adjarra — Tous droits réservés</span><span>Centre Universitaire d'Adjarra, Bénin</span><a href="admin.html" style="font-size:.7rem;color:rgba(255,255,255,.1);transition:color .3s" onmouseover="this.style.color='rgba(255,255,255,.5)'" onmouseout="this.style.color='rgba(255,255,255,.1)'">⚙</a></div>
+</footer>
+
+
+
+<script>
+// ── Bannière d'urgence ──
+(function(){
+  try{
+    const b=JSON.parse(localStorage.getItem('unseb_banniere')||'null');
+    if(!b||!b.active)return;
+    const colors={urgent:'#c8102e',info:'#0066aa',success:'#166534'};
+    const bgs={urgent:'rgba(200,16,46,.97)',info:'rgba(0,80,160,.97)',success:'rgba(22,101,52,.97)'};
+    const div=document.createElement('div');
+    div.style.cssText=`background:${bgs[b.type]||bgs.urgent};color:#fff;padding:10px 40px 10px 20px;text-align:center;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:600;position:relative;z-index:999;line-height:1.5`;
+    div.innerHTML=b.msg+`<button onclick="this.parentElement.remove()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.7);font-size:1.1rem;cursor:pointer;padding:4px">✕</button>`;
+    document.body.insertBefore(div,document.body.firstChild);
+  }catch(e){}
+})();
+// ── Notification badge on chat link ──
+(function(){
+  try{
+    const msgs=JSON.parse(localStorage.getItem('unseb_chat_general')||'[]');
+    const session=JSON.parse(localStorage.getItem('unseb_session')||'null');
+    if(!session)return;
+    const lastSeen=parseInt(localStorage.getItem('unseb_chat_last_seen')||'0');
+    const newMsgs=msgs.filter(m=>m.ts>lastSeen&&m.s!==session.email).length;
+    if(!newMsgs)return;
+    const chatLinks=document.querySelectorAll('a[href="chat.html"]');
+    chatLinks.forEach(l=>{
+      const badge=document.createElement('span');
+      badge.style.cssText='background:var(--rouge-vif);color:#fff;font-size:.6rem;font-weight:700;padding:1px 5px;border-radius:20px;margin-left:4px;v
+function handleUpload(input){const files=Array.from(input.files);if(!files.length)return;const galerie=getGalerie();let loaded=0;files.forEach(file=>{const reader=new FileReader();reader.onload=ev=>{const isVideo=file.type.startsWith('video');galerie.push({src:ev.target.result,title:file.name.replace(/\.[^.]+$/,''),cat:'Événement',type:isVideo?'video':'image',date:new Date().toISOString().split('T')[0]});loaded++;if(loaded===files.length){try{saveGalerie(galerie);}catch(e){alert('Fichiers trop volumineux. Utilisez Firebase Storage.');}renderGallery();const t=document.createElement('div');t.className='toast';t.textContent=`✅ ${files.length} fichier(s) ajouté(s)`;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}};reader.readAsDataURL(file);});}
+renderGallery();
+</script>
+</body>
+</html>

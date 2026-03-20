@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Activités | UNSEB Adjarra</title>
+  <link rel="stylesheet" href="unseb.css"/>
+  <style>
+    .bureau-sous-structure { background:var(--noir); border-radius:var(--rl); padding:28px 32px; color:#fff; border-top:4px solid var(--rouge-vif); margin-top:0 }
+    .bureau-sous-structure.clair { background:var(--blanc); color:var(--texte); border-top-color:#1a73e8; box-shadow:var(--shadow); border:1px solid var(--border); border-top:4px solid #1a73e8 }
+    .bureau-poste { background:rgba(255,255,255,.06); border-radius:var(--r); padding:14px 16px }
+    .bureau-sous-structure.clair .bureau-poste { background:var(--gris-clair) }
+    .bureau-poste-label { font-size:.63rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--rouge-vif); margin-bottom:5px }
+    .bureau-sous-structure.clair .bureau-poste-label { color:#1a73e8 }
+    .bureau-poste-name { font-weight:700; color:#fff; font-size:.93rem }
+    .bureau-sous-structure.clair .bureau-poste-name { color:var(--texte) }
+    .media-placeholder { background:var(--gris2); border-radius:var(--r); display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px; border:2px dashed rgba(0,0,0,.12) }
+    .video-placeholder { background:var(--noir); border-radius:var(--rl); overflow:hidden; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; border:2px dashed rgba(200,16,46,.25); aspect-ratio:16/9 }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="logo-wrap">
+    <img src="logo.jpeg" alt="Logo UNSEB"/>
+    <div class="logo-text">UNSEB <span>Adjarra</span></div>
+  </div>
+  <nav class="nav-links" id="navLinks">
+    <a href="unseb.html" data-page="accueil">Accueil</a>
+    <a href="apropos.html" data-page="apropos">À propos</a>
+    <a href="activites.html" data-page="activites">Activités</a>
+    <a href="etudes.html" data-page="etudes">📚 Études</a>
+    <a href="calendrier.html" data-page="calendrier">Calendrier</a>
+    <a href="galerie.html" data-page="galerie">Galerie</a>
+    <a href="ressources.html" data-page="ressources">Ressources</a>
+    <a href="sondages.html" data-page="sondages">Sondages</a>
+    <a href="chat.html" data-page="chat" id="navChat">💬 Chat</a>
+    <a href="contact.html" data-page="contact">Contact</a>
+    <a href="membre.html" class="nav-cta" data-page="membre">🪪 Carte membre</a>
+  </nav>
+  <button class="nav-toggle" id="navToggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="breadcrumb">Accueil → <span>Activités</span></div>
+  <h1>Activités de la Sous-section UNSEB Adjarra</h1>
+  <p>Culture, hygiène, académique et formation — quatres piliers d'action pour améliorer la vie de chaque étudiant sur le campus.</p>
+</section>
+
+<!-- INTRO -->
+<section class="section-wrap">
+  <div class="section-header fade-up" style="margin-bottom:0">
+    <span class="section-label">Nos axes d'intervention</span>
+    <h2>Une action structurée, une présence permanente</h2>
+    <div class="section-divider"></div>
+    <p>La Sous-section UNSEB Adjarra mène ses activités à travers deux sous-structures spécialisées — le CECAL et le COGHERES — ainsi qu'une offre académique dédiée. </p>
+  </div>
+</section>
+
+<!-- CECAL -->
+<section class="activite-section">
+  <div class="activite-inner">
+    <div class="activite-text fade-up">
+      <span class="act-label">Sous-structure N°1</span>
+      <h2>CECAL — Culture, Arts et Loisirs</h2>
+      <p>Le <strong>Cercle Culturel des Arts et Loisirs (CECAL)</strong> est la structure culturelle et récréative de l'UNSEB Adjarra. « Icône des arts », le CECAL anime la vie du campus à travers des événements variés qui valorisent les talents des étudiants et renforcent le lien communautaire.</p>
+      <p>Du show de danse aux jeux collectifs, en passant par les sorties culturelles et les activités créatives, le CECAL est l'endroit où chaque étudiant peut s'exprimer, se divertir et construire des liens forts avec ses camarades.</p>
+      <ul class="act-list">
+        <li>Organisation de shows et spectacles artistiques</li>
+        <li>Ateliers de danse, chant et expression scénique</li>
+        <li>Jeux, concours et activités de distraction</li>
+        <li>Sorties récréatives et culturelles</li>
+        <li>Animations lors des événements universitaires</li>
+      </ul>
+      <button class="btn btn-rouge btn-sm" onclick="openModal('modal-cecal')">S'inscrire au CECAL</button>
+    </div>
+    <div class="galerie">
+      <img src="cecal.jpeg" class="slide active">
+      <img src="raham.jpeg" class="slide">
+      <img src="bb.jpeg" class="slide">
+      <img src="thimo.jpeg" class="slide" >
+      <img src="musul.jpeg" class="slide">
+      <img src="cecal1.jpeg" class="slide">
+      <img src="cecal2.jpeg" class="slide">
+      <img src="show.jpeg" class="slide">
+
+    </div>
+  </div>
+</section>
+
+<!-- BUREAU CECAL -->
+<section class="section-wrap" style="padding-top:0;padding-bottom:64px">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="section-header fade-up" style="margin-bottom:28px;text-align:left">
+      <span class="section-label">Organisation interne du CECAL</span>
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:0">Bureau du CECAL</h2>
+    </div>
+    <div class="bureau-sous-structure fade-up">
+      <p style="color:rgba(255,255,255,.5);font-size:.86rem;margin-bottom:20px">Le CECAL dispose de son propre bureau élu pour coordonner les activités culturelles et artistiques du campus.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px">
+        <div class="bureau-poste" style="border-top:2px solid var(--rouge-vif)">
+          <div class="bureau-poste-label">Président du CECAL</div>
+          <div class="bureau-poste-name">A renseigner</div>
+        </div>
+        <div class="bureau-poste">
+          <div class="bureau-poste-label">Vice-Président</div>
+          <div class="bureau-poste-name">A renseigner</div>
+        </div>
+        <div class="bureau-poste">
+          <div class="bureau-poste-label">Secrétaire</div>
+          <div class="bureau-poste-name">A renseigner</div>
+        </div>
+        <div class="bureau-poste">
+          <div class="bureau-poste-label">Responsable artistique</div>
+          <div class="bureau-poste-name">A renseigner</div>
+        </div>
+        <div class="bureau-poste">
+          <div class="bureau-poste-label">Trésorier</div>
+          <div class="bureau-poste-name">A renseigner</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COGHERES -->
+<section class="activite-section bg-gris">
+  <div class="activite-inner reverse">
+    <div class="activite-text fade-up">
+      <span class="act-label">Sous-structure N°2</span>
+      <h2>COGHERES — Hygiène, Santé et Bien-être</h2>
+      <p>Le <strong>COGHERES</strong> (Commission de Gestion de l'Hygiène, de la Restauration et des Services) veille au bien-être quotidien des étudiants sur le campus d'Adjarra. Sa devise : <em>Hygiène — Transparence — Disponibilité.</em></p>
+      <p>En prenant en charge la gestion de la cantine universitaire et la propreté des espaces communs, le COGHERES garantit un cadre de vie sain, agréable et favorable aux études. Il organise également des campagnes de sensibilisation à l'hygiène et intervient sur les questions de logement étudiant.</p>
+      <ul class="act-list">
+        <li>Gestion et suivi de la cantine universitaire</li>
+        <li>Campagnes de propreté et d'assainissement du campus</li>
+        <li>Sensibilisation à l'hygiène et à la santé</li>
+        <li>Accompagnement pour le logement étudiant</li>
+        <li>Distribution de produits de première nécessité</li>
+      </ul>
+      <button class="btn btn-rouge btn-sm" onclick="openModal('modal-cogheres')">S'impliquer dans le COGHERES</button>
+    </div>
+    <div class="activite-media fade-up">
+      <img src="cogheres.jpeg" alt="Logo COGHERES" style="height:240px;object-fit:contain;padding:28px;background:#e8f4fb"/>
+      <img src="mouvement.jpeg" alt="Etudiants campus" style="height:200px;border-top:3px solid var(--rouge-vif)"/>
+    </div>
+  </div>
+</section>
+
+<!-- BUREAU COGHERES -->
+<section class="section-wrap bg-gris" style="padding-top:0;padding-bottom:64px">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="section-header fade-up" style="margin-bottom:28px;text-align:left">
+      <span class="section-label">Organisation interne du COGHERES</span>
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:0">Bureau du COGHERES</h2>
+    </div>
+    <div class="bureau-sous-structure clair fade-up">
+      <p style="color:var(--texte2);font-size:.86rem;margin-bottom:20px">Le COGHERES dispose de son propre bureau pour la gestion quotidienne de l'hygiène, de la restauration et des services sur le campus.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px">
+        <div class="bureau-poste" style="border-top:2px solid #1a73e8">
+          <div class="bureau-poste-label">Président du COGHERES</div>
+          <div class="bureau-poste-name">A renseigner</div>
+        </div>
+        <div class="bureau-poste">
+          <div class="bureau-poste-label">Vice-Président</div>
+          <div class="bureau-poste-name">A renseigner</div>
+        </div>
+        <div class="bureau-poste">
+          <div class="bureau-poste-label">Resp. Cantine</div>
+          <div class="bureau-poste-name">A renseigner</div>
+        </div>
+        <div class="bureau-poste">
+          <div class="bureau-poste-label">Resp. Hygiène</div>
+          <div class="bureau-poste-name">A renseigner</div>
+        </div>
+        <div class="bureau-poste">
+          <div class="bureau-poste-label">Trésorier</div>
+          <div class="bureau-poste-name">A renseigner</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TD GRATUITS -->
+<section class="activite-section">
+  <div class="activite-inner">
+    <div class="activite-text fade-up">
+      <span class="act-label">Action académique</span>
+      <h2>TD Gratuits et Soutien Académique</h2>
+      <p>L'UNSEB Adjarra place la <strong>réussite académique</strong> au coeur de ses priorités. En organisant des Travaux Dirigés (TD) gratuits et ouverts à tous, la sous-section offre à chaque étudiant — quelle que soit sa filière — un soutien concret et accessible pour progresser.</p>
+      <p>Ces TD sont animés par des étudiants avancés et des encadreurs bénévoles. Ils couvrent les matières fondamentales, les méthodologies de dissertation, et les techniques de révision. Un tutorat peer-to-peer qui fait ses preuves chaque année.</p>
+      <ul class="act-list">
+        <li>TD ouverts à toutes les filières, sans inscription payante</li>
+        <li>Tutorat entre pairs et encadrement bénévole</li>
+        <li>Révisions intensives avant les examens</li>
+        <li>Méthodologie académique et techniques de rédaction</li>
+        <li>Formations complémentaires (outils numériques, perles, entrepreneuriat)</li>
+      </ul>
+      <button class="btn btn-rouge btn-sm" onclick="openModal('modal-td')">Rejoindre les TD gratuits</button>
+    </div>
+    <div class="activite-media fade-up">
+      <img src="TDS.jpeg" alt="Session de TDs pour Etudiants" style="height:340px"/>
+    </div>
+  </div>
+</section>
+
+<!-- GALERIE TDs (photos et videos) -->
+<section class="section-wrap bg-gris">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="section-header fade-up" style="margin-bottom:32px">
+      <span class="section-label">Formation et activité en images et vidéos</span>
+      <h2> UNSEB en action </h2>
+      <div class="section-divider"></div>
+      <p>Photos et vidéos des activités et formations organisées par l'UNSEB Adjarra.</p>
+    </div>
+
+    <!-- Photos TDs -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:32px">
+      <div class="fade-up">
+        <img src="formation.jpeg" alt="Session TD UNSEB" style="width:100%;height:200px;object-fit:cover;border-radius:var(--r);box-shadow:var(--shadow);display:block"/>
+      </div>
+      <div class="fade-up">
+        <img src="cecal1.jpeg" alt="Session TD UNSEB" style="width:100%;height:200px;object-fit:cover;border-radius:var(--r);box-shadow:var(--shadow);display:block"/>
+      </div>
+      <div class="media-placeholder fade-up" style="height:200px">
+        <img src="thimo.jpeg" alt="Session TD UNSEB" style="width:100%;height:200px;object-fit:cover;border-radius:var(--r);box-shadow:var(--shadow);display:block"/>
+       </div>
+      <div class="media-placeholder fade-up" style="height:200px">
+       <img src="soldat.jpeg" alt="Session TD UNSEB" style="width:100%;height:200px;object-fit:cover;border-radius:var(--r);box-shadow:var(--shadow);display:block"/> 
+      </div>
+    </div>
+
+    <!-- Vidéos TDs -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px" class="fade-up">
+      <div>
+        <div class="video-placeholder">
+           <div style="max-width:800px;margin:0 auto;border-radius:var(--rl);overflow:hidden;box-shadow:var(--shadow-lg)" class="fade-up">
+    <video controls preload="metadata" poster="thimo.jpeg"
+           style="width:100%;display:block;background:#000;max-height:480px">
+      <source src="vidgod.mp4" type="video/mp4"/>
+      Votre navigateur ne supporte pas la lecture vidéo.
+    </video>
+     </div>
+  </div>
+        <p style="text-align:center;font-size:.78rem;color:var(--texte3);margin-top:8px">Vidéo Show Time</p>
+      </div>
+      <div>
+        <div class="video-placeholder">
+           <div style="max-width:800px;margin:0 auto;border-radius:var(--rl);overflow:hidden;box-shadow:var(--shadow-lg)" class="fade-up">
+    <video controls preload="metadata" poster="bb.jpeg"
+           style="width:100%;display:block;background:#000;max-height:480px">
+      <source src="bbvid.mp4" type="video/mp4"/>
+      Votre navigateur ne supporte pas la lecture vidéo.
+    </video>
+  </div>
+  <p></p>
+        <p style="text-align:center;font-size:.78rem;color:var(--texte3);margin-top:8px">Vidéo show Time</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO CECAL -->
+<section class="section-wrap">
+  <div class="section-header fade-up">
+    <span class="section-label">Le CECAL en vidéo</span>
+    <h2>Découvrez le CECAL en action</h2>
+    <div class="section-divider"></div>
+    <p>Une vidéo qui capture l'énergie, la créativité et la passion des membres du CECAL lors de leurs activités.</p>
+  </div>
+  <div style="max-width:800px;margin:0 auto;border-radius:var(--rl);overflow:hidden;box-shadow:var(--shadow-lg)" class="fade-up">
+    <video controls preload="metadata" poster="cecal1.jpeg"
+           style="width:100%;display:block;background:#000;max-height:480px">
+      <source src="vidda.mp4" type="video/mp4"/>
+      Votre navigateur ne supporte pas la lecture vidéo.
+    </video>
+  </div>
+  <p style="text-align:center;font-size:.84rem;color:var(--texte3);margin-top:14px">
+    CECAL — « Icône des arts » · Centre Universitaire d'Adjarra
+  </p>
+</section>
+
+<!-- GALERIE -->
+<section class="section-wrap bg-gris">
+  <div class="section-header fade-up">
+    <span class="section-label">Galerie photos</span>
+    <h2>L'UNSEB Adjarra en action</h2>
+    <div class="section-divider"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;max-width:1100px;margin:0 auto">
+    <img src="cecal1.jpeg" alt="CECAL danse" style="width:100%;height:200px;object-fit:cover;border-radius:var(--r);box-shadow:var(--shadow)" class="fade-up"/>
+    <img src="bb.jpeg" alt="Campus UNSEB" style="width:100%;height:200px;object-fit:cover;border-radius:var(--r);box-shadow:var(--shadow)" class="fade-up"/>
+    <img src="musul.jpeg" alt="Formation" style="width:100%;height:200px;object-fit:cover;border-radius:var(--r);box-shadow:var(--shadow)" class="fade-up"/>
+    <img src="reprt.jpeg" alt="CECAL activité" style="width:100%;height:200px;object-fit:cover;border-radius:var(--r);box-shadow:var(--shadow)" class="fade-up"/>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-band">
+  <h2>Envie de rejoindre une sous-structure ?</h2>
+  <p>Que tu sois passionné de culture, sensible à l'hygiène ou motivé par l'excellence académique, il y a une place pour toi à l'UNSEB Adjarra.</p>
+  <div class="actions">
+    <a href="membre.html" class="btn btn-rouge">🪪 Obtenir ma carte membre</a>
+    <a href="https://wa.me/2290154325324" target="_blank" class="btn" style="background:#25d366;color:#fff">💬 Nous écrire sur WhatsApp</a>
+  </div>
+</section>
+
+<!-- MODAL CECAL -->
+<div class="modal-overlay" id="modal-cecal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-cecal')">✕</button>
+    <div class="modal-title">S'inscrire au CECAL</div>
+    <div class="modal-sub">Cercle Culturel des Arts et Loisirs · Université d'Adjarra</div>
+    <div class="form-group">
+      <label>Nom complet *</label>
+      <input type="text" id="cecal-nom" placeholder="Prénom et NOM"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Filière *</label>
+        <input type="text" id="cecal-filiere" placeholder="ex: Droit, Gestion..."/>
+      </div>
+      <div class="form-group">
+        <label>Niveau *</label>
+        <select id="cecal-niveau">
+          <option value="">-- Choisir --</option>
+          <option>L1</option><option>L2</option><option>L3</option>
+          <option>M1</option><option>M2</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Domaine artistique de prédilection</label>
+      <select id="cecal-art">
+        <option value="">-- Choisir --</option>
+        <option>Danse</option><option>Chant / Musique</option>
+        <option>Théâtre / Expression scénique</option>
+        <option>Arts plastiques</option><option>Autre</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Téléphone *</label>
+      <input type="tel" id="cecal-tel" placeholder="+229 97 00 00 00"/>
+    </div>
+    <div class="form-group">
+      <label>Motivation (facultatif)</label>
+      <textarea id="cecal-motive" placeholder="Pourquoi rejoindre le CECAL ?"></textarea>
+    </div>
+    <button class="btn btn-rouge" style="width:100%;justify-content:center" onclick="submitForm('modal-cecal','CECAL')">Envoyer ma demande</button>
+  </div>
+</div>
+
+<!-- MODAL COGHERES -->
+<div class="modal-overlay" id="modal-cogheres">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-cogheres')">✕</button>
+    <div class="modal-title">S'impliquer dans le COGHERES</div>
+    <div class="modal-sub">Commission Hygiène, Restauration et Services · Université d'Adjarra</div>
+    <div class="form-group">
+      <label>Nom complet *</label>
+      <input type="text" id="cog-nom" placeholder="Prénom et NOM"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Filière *</label>
+        <input type="text" id="cog-filiere" placeholder="ex : Biologie, Sciences..."/>
+      </div>
+      <div class="form-group">
+        <label>Niveau *</label>
+        <select id="cog-niveau">
+          <option value="">-- Choisir --</option>
+          <option>L1</option><option>L2</option><option>L3</option>
+          <option>M1</option><option>M2</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Téléphone *</label>
+      <input type="tel" id="cog-tel" placeholder="+229 97 00 00 00"/>
+    </div>
+    <button class="btn btn-rouge" style="width:100%;justify-content:center" onclick="submitForm('modal-cogheres','COGHERES')">Envoyer ma demande</button>
+  </div>
+</div>
+
+<!-- MODAL TD -->
+<div class="modal-overlay" id="modal-td">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-td')">✕</button>
+    <div class="modal-title">Rejoindre les TD gratuits</div>
+    <div class="modal-sub">Soutien académique UNSEB Adjarra — Ouvert à tous</div>
+    <div class="form-group">
+      <label>Nom complet *</label>
+      <input type="text" id="td-nom" placeholder="Prénom et NOM"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Filière *</label>
+        <input type="text" id="td-filiere" placeholder="Votre filière"/>
+      </div>
+      <div class="form-group">
+        <label>Niveau *</label>
+        <select id="td-niveau">
+          <option value="">-- Choisir --</option>
+          <option>L1</option><option>L2</option><option>L3</option>
+          <option>M1</option><option>M2</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Matières souhaitées</label>
+      <input type="text" id="td-matieres" placeholder="ex : Droit civil, Comptabilité, Maths..."/>
+    </div>
+    <div class="form-group">
+      <label>Téléphone *</label>
+      <input type="tel" id="td-tel" placeholder="+229 97 00 00 00"/>
+    </div>
+    <button class="btn btn-rouge" style="width:100%;justify-content:center" onclick="submitForm('modal-td','TD gratuits')">S'inscrire aux TD</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo-wrap"><img src="logo.jpeg" alt="Logo UNSEB"/><div class="footer-logo-text">UNSEB <span>Adjarra</span></div></div>
+      <p>Union Nationale des Scolaires et Étudiants du Bénin — Sous-section d'Adjarra. Défendre, représenter, agir.</p>
+    </div>
+    <div class="footer-col"><h4>Navigation</h4><ul>
+      <li><a href="unseb.html">Accueil</a></li>
+      <li><a href="apropos.html">À propos</a></li>
+      <li><a href="activites.html">Activités</a></li>
+      <li><a href="etudes.html">📚 Études</a></li>
+      <li><a href="calendrier.html">Calendrier</a></li>
+      <li><a href="galerie.html">Galerie</a></li>
+      <li><a href="ressources.html">Ressources</a></li>
+      <li><a href="sondages.html">Sondages</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Espace étudiant</h4><ul>
+      <li><a href="dashboard.html">Mon dashboard</a></li>
+      <li><a href="chat.html">💬 Chat</a></li>
+      <li><a href="membre.html">🪪 Carte membre</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 UNSEB Adjarra — Tous droits réservés</span>
+    <span>Centre Universitaire d'Adjarra, Bénin</span>
+  </div>
+</footer>
+
+<script>
+  
+  document.getElementById('navToggle').addEventListener('click', function(){
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+  document.querySelectorAll('.fade-up').forEach(function(el){
+    new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
+    },{threshold:.1}).observe(el);
+  });
+  function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+  document.querySelectorAll('.modal-overlay').forEach(function(m){
+    m.addEventListener('click', function(e){ if(e.target===m) closeModal(m.id); });
+  });
+  function submitForm(modalId, section){
+    var nomEl = document.querySelector('#'+modalId+' input[type=text]');
+    var nom = nomEl ? nomEl.value.trim() : '';
+    if(!nom){ if(nomEl) nomEl.focus(); return; }
+    closeModal(modalId);
+    var t = document.createElement('div');
+    t.className='toast';
+    t.textContent = 'Demande envoyée pour le ' + section + ' ! Nous vous contacterons bientôt.';
+    document.body.appendChild(t);
+    setTimeout(function(){ t.remove(); }, 4500);
+    var msg = encodeURIComponent('Bonjour UNSEB Adjarra, je viens de soumettre ma demande pour rejoindre la structure : *' + section + '*.\nMon nom : ' + nom + '.\nMerci de bien vouloir me contacter.');
+    setTimeout(function(){ window.open('https://wa.me/2290154325324?text='+msg,'_blank'); }, 800);
+  }
+
+
+  (function(){
+    const nav = document.createElement('div');
+    nav.style.cssText = 'display:flex;align-items:center;gap:8px;margin-left:8px;flex-shrink:0';
+    const header = document.querySelector('.navbar');
+    const toggle = document.getElementById('navToggle');
+    if(header && toggle) header.insertBefore(nav, toggle);
+    let session = null;
+    try { session = JSON.parse(localStorage.getItem('unseb_session')); } catch(e) {}
+    if (session) {
+      nav.innerHTML = '<a href="dashboard.html" style="display:flex;align-items:center;gap:7px;padding:5px 13px 5px 6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:30px;color:rgba(255,255,255,.85);font-size:.82rem;font-weight:600;text-decoration:none"><span style="width:24px;height:24px;border-radius:50%;background:var(--rouge-vif);display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#fff;flex-shrink:0">' + session.prenom[0].toUpperCase() + '</span>' + session.prenom + '</a>';
+    } else {
+      nav.innerHTML = '<a href="login.html" style="padding:7px 16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:30px;color:rgba(255,255,255,.75);font-size:.82rem;font-weight:600;text-decoration:none;white-space:nowrap">Se connecter</a>';
+    }
+    // Slideshow auto
+    document.querySelectorAll('.galerie').forEach(function(g) {
+      var slides = g.querySelectorAll('.slide');
+      if (!slides.length) return;
+      var i = 0;
+      setInterval(function() {
+        slides[i].classList.remove('active');
+        i = (i + 1) % slides.length;
+        slides[i].classList.add('active');
+      }, 2800);
+    });
+  })();
+</script>
+</body>
+</html>

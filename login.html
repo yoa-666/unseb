@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Connexion — UNSEB Adjarra</title>
+  <link rel="stylesheet" href="unseb.css"/>
+  <style>
+    body{background:var(--noir);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+    .auth-card{background:#fff;border-radius:20px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.4)}
+    .auth-head{background:linear-gradient(135deg,#0d0d0d,#1a0000 60%,#2d0505);padding:32px 36px 24px;text-align:center;position:relative;overflow:hidden}
+    .auth-head::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 50% 40%,rgba(200,16,46,.2),transparent 70%)}
+    .auth-logo{width:60px;height:60px;border-radius:50%;border:3px solid rgba(200,16,46,.5);object-fit:contain;background:#fff;padding:3px;margin:0 auto 12px;position:relative;z-index:1;display:block}
+    .auth-head h1{color:#fff;font-size:1.2rem;font-weight:800;position:relative;z-index:1;margin-bottom:3px}
+    .auth-head h1 span{color:var(--rouge-vif)}
+    .auth-head p{color:rgba(255,255,255,.4);font-size:.83rem;position:relative;z-index:1}
+    .auth-body{padding:28px 32px}
+    .auth-tabs{display:flex;gap:0;margin-bottom:22px;border-radius:10px;overflow:hidden;border:1.5px solid var(--border)}
+    .auth-tab{flex:1;padding:10px;font-size:.86rem;font-weight:700;cursor:pointer;border:none;background:#fff;color:var(--texte2);transition:all .2s;font-family:'Outfit',sans-serif}
+    .auth-tab.active{background:var(--rouge-vif);color:#fff}
+
+    /* ÉTAPES INSCRIPTION */
+    .steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:24px}
+    .step{display:flex;flex-direction:column;align-items:center;gap:4px}
+    .step-dot{width:30px;height:30px;border-radius:50%;border:2px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#bbb;background:#fff;transition:all .3s;position:relative;z-index:1}
+    .step-dot.active{border-color:var(--rouge-vif);background:var(--rouge-vif);color:#fff;box-shadow:0 0 0 4px rgba(200,16,46,.15)}
+    .step-dot.done{border-color:var(--rouge-vif);background:var(--rouge-vif);color:#fff}
+    .step-dot.done::after{content:'✓';font-size:.8rem}
+    .step-dot.done .snum{display:none}
+    .step-lbl{font-size:.65rem;font-weight:600;color:#bbb;white-space:nowrap;transition:color .3s}
+    .step-lbl.active{color:var(--rouge-vif)}
+    .step-lbl.done{color:var(--rouge)}
+    .step-bar{width:50px;height:2px;background:#e8e8e8;flex-shrink:0;margin-bottom:16px;transition:background .4s}
+    .step-bar.done{background:var(--rouge-vif)}
+
+    .form-panel{display:none}.form-panel.active{display:block;animation:slideIn .3s ease}
+    @keyframes slideIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+
+    .form-group{margin-bottom:14px}
+    .form-group label{display:block;font-size:.73rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--texte2);margin-bottom:6px}
+    .form-group input,.form-group select{width:100%;padding:11px 14px;border:1.5px solid rgba(0,0,0,.1);border-radius:10px;font-family:'Outfit',sans-serif;font-size:.91rem;background:#f9f9f9;outline:none;transition:border-color .2s,box-shadow .2s}
+    .form-group input:focus,.form-group select:focus{border-color:var(--rouge-vif);box-shadow:0 0 0 3px rgba(200,16,46,.08);background:#fff}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+    /* PHOTO UPLOAD */
+    .photo-zone{border:2px dashed rgba(200,16,46,.3);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(200,16,46,.03);position:relative}
+    .photo-zone:hover{border-color:var(--rouge-vif);background:rgba(200,16,46,.06)}
+    .photo-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    #photoPreview{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--rouge-vif);display:none;margin:0 auto 10px;box-shadow:0 6px 20px rgba(200,16,46,.25)}
+    #photoPreview.show{display:block}
+    .photo-icon{font-size:2.2rem;margin-bottom:8px}
+    .photo-hint{font-size:.78rem;color:var(--texte3);margin-top:4px}
+    .photo-required{font-size:.72rem;color:var(--rouge-vif);font-weight:600;margin-top:4px}
+
+    /* OTP */
+    .otp-wrap{display:flex;gap:8px;justify-content:center;margin:16px 0}
+    .otp-input{width:46px;height:52px;border:2px solid rgba(0,0,0,.12);border-radius:10px;text-align:center;font-size:1.4rem;font-weight:800;font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s;background:#f9f9f9}
+    .otp-input:focus{border-color:var(--rouge-vif);box-shadow:0 0 0 3px rgba(200,16,46,.1);background:#fff}
+    .otp-input.filled{border-color:var(--rouge-vif);background:#fff}
+    .otp-resend{text-align:center;font-size:.82rem;color:var(--texte3);margin-top:10px}
+    .otp-resend a{color:var(--rouge-vif);font-weight:600;cursor:pointer;text-decoration:none}
+    .otp-email-display{background:rgba(200,16,46,.06);border:1px solid rgba(200,16,46,.2);border-radius:8px;padding:10px 14px;font-size:.84rem;color:var(--rouge);font-weight:600;text-align:center;margin-bottom:16px;word-break:break-all}
+    .otp-timer{font-size:.78rem;color:var(--texte3);text-align:center;margin-top:6px}
+
+    .btn-auth{width:100%;padding:12px;background:var(--rouge-vif);color:#fff;border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-size:.93rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:4px}
+    .btn-auth:hover{background:var(--rouge);transform:translateY(-1px);box-shadow:0 6px 20px rgba(200,16,46,.35)}
+    .btn-auth:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .btn-outline{width:100%;padding:11px;background:transparent;color:var(--rouge-vif);border:1.5px solid var(--rouge-vif);border-radius:12px;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:8px}
+    .btn-outline:hover{background:var(--rouge-vif);color:#fff}
+
+    .alert{padding:11px 14px;border-radius:10px;font-size:.85rem;margin-bottom:14px;font-weight:500;display:none;line-height:1.5}
+    .alert.error{background:rgba(200,16,46,.08);border:1.5px solid rgba(200,16,46,.2);color:var(--rouge)}
+    .alert.success{background:rgba(34,197,94,.08);border:1.5px solid rgba(34,197,94,.3);color:#15803d}
+    .alert.info{background:rgba(59,130,246,.08);border:1.5px solid rgba(59,130,246,.25);color:#1e40af}
+
+    .auth-footer{text-align:center;margin-top:14px;font-size:.81rem;color:var(--texte3)}
+    .auth-footer a{color:var(--rouge-vif);font-weight:600;text-decoration:none}
+    .back-home{position:fixed;top:18px;left:18px;color:rgba(255,255,255,.5);font-size:.83rem;text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s;padding:6px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.1)}
+    .back-home:hover{color:#fff;background:rgba(255,255,255,.07)}
+    .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:6px;vertical-align:middle}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:480px){.auth-body{padding:22px 18px}.form-row{grid-template-columns:1fr}.otp-input{width:40px;height:46px;font-size:1.2rem}}
+  </style>
+</head>
+<body>
+
+<a href="unseb.html" class="back-home">← Accueil</a>
+
+<div class="auth-card">
+  <div class="auth-head">
+    <img src="logo.jpeg" alt="Logo UNSEB" class="auth-logo"/>
+    <h1>UNSEB <span>Adjarra</span></h1>
+    <p>Espace membres — Centre Universitaire d'Adjarra</p>
+  </div>
+
+  <div class="auth-body">
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="showTab('login')">Se connecter</button>
+      <button class="auth-tab" id="tabRegister" onclick="showTab('register')">S'inscrire</button>
+    </div>
+
+    <div class="alert" id="alertBox"></div>
+
+    <!-- ══ CONNEXION ══ -->
+    <div class="form-panel active" id="panelLogin">
+      <div class="form-group">
+        <label>Adresse email</label>
+        <input type="email" id="loginEmail" placeholder="votre@email.com" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+      <button class="btn-auth" id="btnLogin" onclick="doLogin()">Se connecter</button>
+      <div class="auth-footer">Pas encore de compte ? <a href="#" onclick="showTab('register');return false">S'inscrire</a></div>
+    </div>
+
+    <!-- ══ INSCRIPTION — ÉTAPES ══ -->
+    <div class="form-panel" id="panelRegister">
+
+      <!-- INDICATEUR ÉTAPES -->
+      <div class="steps" id="stepsBar">
+        <div class="step">
+          <div class="step-dot active" id="dot1"><span class="snum">1</span></div>
+          <div class="step-lbl active" id="lbl1">Infos</div>
+        </div>
+        <div class="step-bar" id="bar1"></div>
+        <div class="step">
+          <div class="step-dot" id="dot2"><span class="snum">2</span></div>
+          <div class="step-lbl" id="lbl2">Photo</div>
+        </div>
+        <div class="step-bar" id="bar2"></div>
+        <div class="step">
+          <div class="step-dot" id="dot3"><span class="snum">3</span></div>
+          <div class="step-lbl" id="lbl3">Vérif. email</div>
+        </div>
+      </div>
+
+      <!-- ÉTAPE 1 : INFOS -->
+      <div class="form-panel active" id="step1">
+        <div class="form-row">
+          <div class="form-group"><label>Prénom *</label><input type="text" id="regPrenom" placeholder="Prénom"/></div>
+          <div class="form-group"><label>Nom *</label><input type="text" id="regNom" placeholder="NOM"/></div>
+        </div>
+        <div class="form-group"><label>Email *</label><input type="email" id="regEmail" placeholder="votre@email.com"/></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Filière *</label>
+            <select id="regFiliere">
+              <option value="">— Choisir —</option>
+              <option>Anglais</option><option>Géographie</option><option>Sociologie</option>
+              <option>Informatique</option><option>Droit</option><option>Gestion</option>
+              <option>Sciences</option><option>Autre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Niveau *</label>
+            <select id="regNiveau">
+              <option value="">— Niveau —</option>
+              <option>L1</option><option>L2</option><option>L3</option>
+              <option>M1</option><option>M2</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Téléphone</label><input type="tel" id="regTel" placeholder="+229 97 00 00 00"/></div>
+        <div class="form-group"><label>Mot de passe * (min. 8 caractères)</label><input type="password" id="regPassword" placeholder="Choisissez un mot de passe fort"/></div>
+        <div class="form-group"><label>Confirmer le mot de passe *</label><input type="password" id="regPassword2" placeholder="Répétez le mot de passe"/></div>
+        <button class="btn-auth" onclick="goStep2()">Continuer →</button>
+        <div class="auth-footer">Déjà inscrit ? <a href="#" onclick="showTab('login');return false">Se connecter</a></div>
+      </div>
+
+      <!-- ÉTAPE 2 : PHOTO -->
+      <div class="form-panel" id="step2">
+        <p style="font-size:.86rem;color:var(--texte2);margin-bottom:16px;text-align:center;line-height:1.6">
+          Votre photo sera utilisée sur votre <strong>carte membre UNSEB</strong>.<br>
+          Elle doit être claire, de face, sur fond neutre.
+        </p>
+        <div class="photo-zone" id="photoZone">
+          <img id="photoPreview" src="" alt="Aperçu photo"/>
+          <div id="photoPlaceholder">
+            <div class="photo-icon">📷</div>
+            <strong style="font-size:.9rem">Cliquez pour ajouter votre photo</strong>
+            <div class="photo-hint">JPG, PNG ou WEBP — Max 5 MB</div>
+          </div>
+          <input type="file" id="regPhoto" accept="image/jpeg,image/png,image/webp" onchange="previewPhoto(this)"/>
+        </div>
+        <div class="photo-required">* Photo obligatoire pour la carte membre</div>
+        <button class="btn-auth" id="btnStep2" onclick="goStep3()" style="margin-top:16px">Continuer →</button>
+        <button class="btn-outline" onclick="goToStep(1)">← Retour</button>
+      </div>
+
+      <!-- ÉTAPE 3 : VÉRIFICATION EMAIL OTP -->
+      <div class="form-panel" id="step3">
+        <p style="font-size:.86rem;color:var(--texte2);margin-bottom:12px;text-align:center;line-height:1.6">
+          Un code à 6 chiffres a été envoyé à
+        </p>
+        <div class="otp-email-display" id="otpEmailDisplay"></div>
+        <p style="font-size:.83rem;color:var(--texte2);margin-bottom:4px;text-align:center">Entrez le code reçu :</p>
+        <div class="otp-wrap" id="otpWrap">
+          <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" id="otp0"/>
+          <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" id="otp1"/>
+          <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" id="otp2"/>
+          <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" id="otp3"/>
+          <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" id="otp4"/>
+          <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" id="otp5"/>
+        </div>
+        <div class="otp-timer" id="otpTimer">Expire dans <strong id="timerCount">10:00</strong></div>
+        <div class="otp-resend">Pas reçu ? <a onclick="resendOTP()">Renvoyer le code</a></div>
+        <button class="btn-auth" id="btnVerify" onclick="verifyOTP()" style="margin-top:16px" disabled>Vérifier et créer mon compte</button>
+        <button class="btn-outline" onclick="goToStep(2)">← Retour</button>
+      </div>
+
+    </div><!-- /panelRegister -->
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+emailjs.init('9-Ta7lluOweVMqDUa');
+
+let currentStep = 1;
+let otpTimerInterval = null;
+let otpExpireAt = null;
+let regData = {}; // données temporaires inscription
+
+// ── ONGLETS ─────────────────────────────────────
+function showTab(tab) {
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabRegister').classList.toggle('active', tab==='register');
+  document.getElementById('panelLogin').classList.toggle('active', tab==='login');
+  document.getElementById('panelRegister').classList.toggle('active', tab==='register');
+  hideAlert();
+  if(tab==='register') goToStep(1);
+}
+
+function showAlert(msg, type='error') {
+  const b=document.getElementById('alertBox');
+  b.textContent=msg; b.className='alert '+type; b.style.display='block';
+}
+function hideAlert() { document.getElementById('alertBox').style.display='none'; }
+function setLoading(id, loading, text) {
+  const b=document.getElementById(id);
+  if(!b) return;
+  b.disabled=loading;
+  b.innerHTML=loading?'<span class="spinner"></span>'+text:text;
+}
+
+// ── CONNEXION ────────────────────────────────────
+async function doLogin() {
+  hideAlert();
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPassword').value;
+  if(!email||!pass){showAlert('Email et mot de passe requis.');return;}
+  setLoading('btnLogin',true,'Connexion…');
+  try {
+    const r=await fetch('api/auth.php?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,mot_de_passe:pass})});
+    const d=await r.json();
+    if(!d.success){showAlert(d.error);return;}
+    localStorage.setItem('unseb_session',JSON.stringify(d.user));
+    showAlert('✅ Connexion réussie ! Redirection…','success');
+    setTimeout(()=>{window.location.href=d.user.role==='admin'?'admin.html':'dashboard.html';},700);
+  } catch(e){showAlert('Erreur serveur. Vérifiez que XAMPP est démarré.');}
+  finally{setLoading('btnLogin',false,'Se connecter');}
+}
+
+// ── ÉTAPES INSCRIPTION ───────────────────────────
+function goToStep(n) {
+  currentStep=n;
+  // Masquer tous les steps
+  [1,2,3].forEach(i=>{
+    document.getElementById('step'+i).classList.toggle('active',i===n);
+  });
+  // Mettre à jour indicateur
+  [1,2,3].forEach(i=>{
+    const dot=document.getElementById('dot'+i);
+    const lbl=document.getElementById('lbl'+i);
+    if(i<n){dot.className='step-dot done';lbl.className='step-lbl done';}
+    else if(i===n){dot.className='step-dot active';lbl.className='step-lbl active';}
+    else{dot.className='step-dot';lbl.className='step-lbl';}
+  });
+  [1,2].forEach(i=>{
+    const bar=document.getElementById('bar'+i);
+    bar.className='step-bar'+(i<n?' done':'');
+  });
+  hideAlert();
+}
+
+// ÉTAPE 1 → 2
+function goStep2() {
+  hideAlert();
+  const prenom=document.getElementById('regPrenom').value.trim();
+  const nom=document.getElementById('regNom').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const filiere=document.getElementById('regFiliere').value;
+  const niveau=document.getElementById('regNiveau').value;
+  const pass=document.getElementById('regPassword').value;
+  const pass2=document.getElementById('regPassword2').value;
+
+  if(!prenom||!nom||!email||!filiere||!niveau||!pass){showAlert('Veuillez remplir tous les champs obligatoires (*).');return;}
+  if(!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)){showAlert('Adresse email invalide.');return;}
+  if(pass!==pass2){showAlert('Les mots de passe ne correspondent pas.');return;}
+  if(pass.length<8){showAlert('Le mot de passe doit contenir au moins 8 caractères.');return;}
+
+  regData={prenom,nom,email,filiere,niveau,telephone:document.getElementById('regTel').value.trim(),mot_de_passe:pass};
+  goToStep(2);
+}
+
+// ÉTAPE 2 → 3 : vérifier photo et envoyer OTP
+async function goStep3() {
+  hideAlert();
+  const photoFile=document.getElementById('regPhoto').files[0];
+  if(!photoFile){showAlert('La photo est obligatoire pour votre carte membre.');return;}
+  if(photoFile.size>5*1024*1024){showAlert('La photo est trop lourde (max 5 MB).');return;}
+
+  setLoading('btnStep2',true,'Envoi du code…');
+  try {
+    // Générer OTP via API
+    const r=await fetch('api/otp.php?action=envoyer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:regData.email,prenom:regData.prenom})});
+    const d=await r.json();
+    if(!d.success){showAlert(d.error);return;}
+
+ // Envoyer le code par EmailJS
+const ej=d.emailjs_data;
+
+try {
+  await emailjs.send(ej.service_id, ej.template_id, {
+    to_email:  ej.to_email,
+    to_name:   ej.to_name,
+    subject:   ej.subject,
+    message:   ej.message,
+    otp_code:  ej.otp_code,
+  });
+  showAlert('✅ Code envoyé à '+ej.to_email+' — vérifiez votre boîte mail !','success');
+} catch(ejErr) {
+  console.warn('EmailJS error:', ejErr);
+  showAlert('⚠ Problème d\'envoi d\'email. Vérifiez votre connexion.','info');
+}
+
+    // Afficher l'email dans l'étape 3
+    document.getElementById('otpEmailDisplay').textContent=regData.email;
+    startOTPTimer(10*60);
+    goToStep(3);
+    document.getElementById('otp0').focus();
+
+  } catch(e){showAlert('Erreur serveur.');}
+  finally{setLoading('btnStep2',false,'Continuer →');}
+}
+
+// TIMER OTP
+function startOTPTimer(seconds) {
+  if(otpTimerInterval) clearInterval(otpTimerInterval);
+  otpExpireAt = Date.now() + seconds*1000;
+  function tick() {
+    const left = Math.max(0, Math.round((otpExpireAt-Date.now())/1000));
+    const m = String(Math.floor(left/60)).padStart(2,'0');
+    const s = String(left%60).padStart(2,'0');
+    const el = document.getElementById('timerCount');
+    if(el) el.textContent = m+':'+s;
+    if(left<=0) clearInterval(otpTimerInterval);
+  }
+  tick();
+  otpTimerInterval = setInterval(tick, 1000);
+}
+
+async function resendOTP() {
+  hideAlert();
+  try {
+    const r=await fetch('api/otp.php?action=envoyer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:regData.email,prenom:regData.prenom})});
+    const d=await r.json();
+    if(!d.success){showAlert(d.error);return;}
+    const ej=d.emailjs_data;
+    try{await emailjs.send(ej.service_id,ej.template_id,{to_email:ej.to_email,to_name:ej.to_name,subject:ej.subject,message:ej.message});}
+    catch(e){console.warn('EmailJS:',e);}
+    showAlert('✅ Nouveau code envoyé !','success');
+    startOTPTimer(10*60);
+    [0,1,2,3,4,5].forEach(i=>document.getElementById('otp'+i).value='');
+    document.getElementById('otp0').focus();
+  } catch(e){showAlert('Erreur serveur.');}
+}
+
+// GESTION INPUTS OTP
+document.addEventListener('DOMContentLoaded', function(){
+  [0,1,2,3,4,5].forEach(i=>{
+    const inp=document.getElementById('otp'+i);
+    if(!inp) return;
+    inp.addEventListener('input', function(){
+      this.value=this.value.replace(/[^0-9]/g,'').slice(-1);
+      if(this.value&&i<5) document.getElementById('otp'+(i+1)).focus();
+      this.classList.toggle('filled',!!this.value);
+      checkOTPComplete();
+    });
+    inp.addEventListener('keydown', function(e){
+      if(e.key==='Backspace'&&!this.value&&i>0) document.getElementById('otp'+(i-1)).focus();
+    });
+    inp.addEventListener('paste', function(e){
+      e.preventDefault();
+      const pasted=(e.clipboardData||window.clipboardData).getData('text').replace(/[^0-9]/g,'');
+      [...pasted.slice(0,6)].forEach((c,j)=>{
+        const el=document.getElementById('otp'+j);
+        if(el){el.value=c;el.classList.add('filled');}
+      });
+      checkOTPComplete();
+      const lastFilled=Math.min(pasted.length,5);
+      document.getElementById('otp'+lastFilled)?.focus();
+    });
+  });
+});
+
+function checkOTPComplete(){
+  const code=[0,1,2,3,4,5].map(i=>document.getElementById('otp'+i)?.value||'').join('');
+  document.getElementById('btnVerify').disabled=code.length!==6;
+}
+
+// VÉRIFIER OTP ET CRÉER COMPTE
+async function verifyOTP() {
+  hideAlert();
+  const code=[0,1,2,3,4,5].map(i=>document.getElementById('otp'+i).value).join('');
+  if(code.length!==6){showAlert('Entrez les 6 chiffres du code.');return;}
+
+  setLoading('btnVerify',true,'Vérification…');
+  try {
+    // 1. Vérifier le code OTP
+    const vr=await fetch('api/otp.php?action=verifier',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:regData.email,code})});
+    const vd=await vr.json();
+    if(!vd.success){showAlert(vd.error);return;}
+
+    // 2. Créer le compte avec photo
+    const fd=new FormData();
+    Object.entries(regData).forEach(([k,v])=>fd.append(k,v));
+    fd.append('email_verifie','1');
+    const photoFile=document.getElementById('regPhoto').files[0];
+    if(photoFile) fd.append('photo',photoFile);
+
+    const rr=await fetch('api/auth.php?action=register',{method:'POST',body:fd});
+    const rd=await rr.json();
+    if(!rd.success){showAlert(rd.error);return;}
+
+    // 3. Notifier l'admin par EmailJS
+    if(rd.emailjs_data){
+      const ej=rd.emailjs_data;
+      try{await emailjs.send(ej.service_id,ej.template_id,{to_email:ej.to_email,to_name:ej.to_name,from_name:ej.from_name,from_email:ej.from_email,subject:'Nouvelle inscription UNSEB — '+ej.from_name,message:ej.message});}
+      catch(e){console.warn('EmailJS admin:',e);}
+    }
+
+    showAlert('🎉 Compte créé avec succès ! En attente de validation par l\'administrateur.','success');
+    setTimeout(()=>showTab('login'),3500);
+
+  } catch(e){showAlert('Erreur serveur.');}
+  finally{setLoading('btnVerify',false,'Vérifier et créer mon compte');}
+}
+
+// PREVIEW PHOTO
+function previewPhoto(input){
+  const file=input.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const img=document.getElementById('photoPreview');
+    img.src=e.target.result;
+    img.classList.add('show');
+    document.getElementById('photoPlaceholder').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ENTER KEY
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter') return;
+  const activePanel=document.querySelector('.form-panel.active');
+  if(!activePanel) return;
+  if(activePanel.id==='panelLogin') doLogin();
+});
+
+// REDIRECTION SI DÉJÀ CONNECTÉ
+(async function(){
+  const s=localStorage.getItem('unseb_session');
+  if(!s) return;
+  try{
+    const r=await fetch('api/auth.php?action=me');
+    const d=await r.json();
+    if(d.success) window.location.href=d.user.role==='admin'?'admin.html':'dashboard.html';
+    else localStorage.removeItem('unseb_session');
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

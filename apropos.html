@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <base href="./">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>À propos | UNSEB Adjarra</title>
+  <link rel="stylesheet" href="unseb.css"/>
+<style>
+    .timeline-wrap { position:relative; padding-left:36px; max-width:860px; margin:0 auto }
+    .timeline-wrap::before { content:''; position:absolute; left:11px; top:8px; bottom:8px; width:2px; background:linear-gradient(to bottom, var(--rouge-vif), rgba(200,16,46,.1)) }
+    .timeline-item { position:relative; margin-bottom:40px }
+    .timeline-dot { position:absolute; left:-36px; top:6px; width:22px; height:22px; border-radius:50%; background:#fff; border:3px solid var(--rouge-vif); z-index:1 }
+    .timeline-dot.active { background:var(--rouge-vif) }
+    .timeline-year { font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--rouge-vif); margin-bottom:6px }
+    .timeline-content h3 { font-size:1.05rem; font-weight:700; margin-bottom:8px }
+    .timeline-content p { color:var(--texte2); font-size:.93rem; line-height:1.76 }
+    .timeline-note { margin-top:12px; padding:10px 14px; background:var(--rouge-bg); border-radius:var(--r); font-size:.86rem; color:var(--texte2) }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar" id="mainNav">
+  <div class="logo-wrap">
+    <img src="logo.jpeg" alt="Logo UNSEB"/>
+    <div class="logo-text">UNSEB <span>Adjarra</span></div>
+  </div>
+  <nav class="nav-links" id="navLinks">
+    <a href="unseb.html" data-page="accueil">Accueil</a>
+    <a href="apropos.html" data-page="apropos">À propos</a>
+    <a href="activites.html" data-page="activites">Activités</a>
+    <a href="etudes.html" data-page="etudes">📚 Études</a>
+    <a href="calendrier.html" data-page="calendrier">Calendrier</a>
+    <a href="galerie.html" data-page="galerie">Galerie</a>
+    <a href="ressources.html" data-page="ressources">Ressources</a>
+    <a href="sondages.html" data-page="sondages">Sondages</a>
+    <a href="chat.html" data-page="chat" id="navChat">💬 Chat</a>
+    <a href="contact.html" data-page="contact">Contact</a>
+    <a href="membre.html" class="nav-cta" data-page="membre">🪪 Carte membre</a>
+  </nav>
+  <div id="navSession" style="display:flex;align-items:center;gap:8px;margin-left:8px;flex-shrink:0"></div>
+  <button type="button" class="nav-toggle" id="navToggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="breadcrumb">Accueil → <span>À propos</span></div>
+  <h1>À propos de la Sous-section UNSEB Adjarra</h1>
+  <p>Histoire, organisation, valeurs et engagement au service des étudiants du Centre Universitaire d'Adjarra.</p>
+</section>
+
+<!-- PRÉSENTATION -->
+<section class="about-block fade-up">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center;margin-bottom:40px">
+    <div>
+      <span class="section-label">Présentation officielle</span>
+      <h2>Qui sommes-nous ?</h2>
+      <p>La <strong>Sous-section UNSEB d'Adjarra</strong> est la représentation locale de l'Union Nationale des Scolaires et Étudiants du Bénin, implantée au Centre Universitaire d'Adjarra (UA). Elle constitue le bras estudiantin de l'UNSEB sur le campus et regroupe des étudiants de toutes filières, unis par la même volonté de défendre leurs droits et de promouvoir leur bien-être.</p>
+      <p>Fondée dans la dynamique nationale de l'UNSEB, notre sous-section a pour rôle d'être l'interlocuteur privilégié entre la communauté estudiantine et les autorités universitaires. Elle œuvre à identifier les problèmes, formuler des solutions et mener des actions concrètes pour améliorer les conditions d'étude et de vie sur le campus.</p>
+      <p>Grâce à ses sous-structures spécialisées — CECAL, COGHERES et son unité académique — l'UNSEB Adjarra couvre tous les aspects de la vie étudiante : culture, hygiène, restauration, logement et réussite académique.</p>
+    </div>
+    <div>
+      <img src="unseb1.jpeg" alt="Membres UNSEB Adjarra" style="width:100%;height:300px;object-fit:cover;border-radius:var(--rl);box-shadow:var(--shadow-lg)"/>
+    </div>
+  </div>
+</section>
+
+<!-- VISION / MISSION -->
+<div class="vm-section">
+  <div class="vm-card rouge fade-up">
+    <div class="vm-card-icon">🎯</div>
+    <h3>Notre Vision</h3>
+    <p>Faire de la Sous-section UNSEB Adjarra une organisation étudiante de référence : forte, crédible et proactive, capable de défendre efficacement les droits de chaque étudiant et de contribuer à l'émergence d'une jeunesse béninoise responsable, compétente et engagée pour le développement national.</p>
+  </div>
+  <div class="vm-card fade-up">
+    <div class="vm-card-icon">🚀</div>
+    <h3>Notre Mission</h3>
+    <p>Représenter, défendre et promouvoir les intérêts académiques, sociaux et moraux des étudiants du Centre Universitaire d'Adjarra — en favorisant un cadre d'étude sain, inclusif et propice à la réussite de chaque apprenant, tout en renforçant le dialogue avec les autorités universitaires.</p>
+  </div>
+  <div class="vm-card fade-up">
+    <div class="vm-card-icon">⚡</div>
+    <h3>Nos Actions</h3>
+    <p>TD gratuits, shows culturels, gestion de la cantine, sensibilisation à l'hygiène, formations pratiques en entrepreneuriat et en outils numériques. Chaque action est pensée pour répondre à un besoin concret des étudiants d'Adjarra.</p>
+  </div>
+</div>
+
+<!-- VALEURS -->
+<section class="section-wrap bg-gris">
+  <div class="section-header fade-up">
+    <span class="section-label">Nos valeurs</span>
+    <h2>Ce qui nous guide chaque jour</h2>
+    <div class="section-divider"></div>
+    <p>L'UNSEB Adjarra est portée par des valeurs fondatrices qui orientent chaque décision, chaque action et chaque engagement de ses membres.</p>
+  </div>
+  <div class="values-grid" style="max-width:720px;margin:0 auto">
+    <span class="value-tag fade-up">Solidarité</span>
+    <span class="value-tag fade-up">Responsabilité</span>
+    <span class="value-tag fade-up">Intégrité</span>
+    <span class="value-tag fade-up">Respect</span>
+    <span class="value-tag fade-up">Engagement</span>
+    <span class="value-tag fade-up">Leadership</span>
+    <span class="value-tag fade-up">Excellence</span>
+    <span class="value-tag fade-up">Unité</span>
+  </div>
+</section>
+
+<!-- OBJECTIFS -->
+<section class="about-block fade-up">
+  <span class="section-label">Objectifs spécifiques</span>
+  <h2>Ce que nous voulons accomplir</h2>
+  <p>L'UNSEB Adjarra s'est dotée d'objectifs clairs et ambitieux pour servir efficacement la communauté estudiantine :</p>
+  <ul class="objectifs">
+    <li>Défendre les droits matériels et moraux des étudiants du Centre Universitaire d'Adjarra.</li>
+    <li>Identifier les problèmes académiques, sociaux et logistiques sur le campus et proposer des solutions concrètes.</li>
+    <li>Favoriser la paix, l'unité et la solidarité entre les étudiants de toutes filières.</li>
+    <li>Organiser des activités éducatives, sociales, culturelles et sportives régulières.</li>
+    <li>Sensibiliser les étudiants à leurs droits, leurs devoirs et aux enjeux de la vie universitaire.</li>
+    <li>Renforcer le dialogue constructif et permanent avec les autorités universitaires.</li>
+    <li>Encourager l'excellence académique, le leadership et l'esprit entrepreneurial.</li>
+    <li>Offrir des formations pratiques et utiles pour le développement personnel et professionnel.</li>
+  </ul>
+</section>
+
+<!-- BUREAU -->
+<section class="bureau-section">
+  <div class="section-header fade-up">
+    <span class="section-label">Gouvernance</span>
+    <h2>Bureau Sectoriel — Mandat 2026</h2>
+    <div class="section-divider"></div>
+    <p>L'équipe dirigeante élue pour représenter et défendre les étudiants du Centre Universitaire d'Adjarra au cours du mandat en cours.</p>
+  </div>
+  <div class="bureau-grid">
+    <!-- Président mis en avant -->
+    <div class="member-card president fade-up">
+      <div class="member-role">Président de la Sous-section</div>
+      <div class="member-name">Gaël Sonon</div>
+    </div>
+    <div class="member-card fade-up">
+      <div class="member-role">Vice-Président</div>
+      <div class="member-name">AGBOYOU Serge</div>
+    </div>
+    <div class="member-card fade-up">
+      <div class="member-role">Secrétaire Général</div>
+      <div class="member-name">TOSSA Yoann</div>
+    </div>
+    <div class="member-card fade-up">
+      <div class="member-role">SG Adjoint</div>
+      <div class="member-name">Jérusalem HOUNKPO</div>
+    </div>
+    <div class="member-card fade-up">
+      <div class="member-role">Organisateur Général 1</div>
+      <div class="member-name">Théophile KODJA</div>
+    </div>
+    <div class="member-card fade-up">
+      <div class="member-role">Organisateur Général 2</div>
+      <div class="member-name">IMOLÈ KAKPO</div>
+    </div>
+    <div class="member-card fade-up">
+      <div class="member-role">Trésorier Général</div>
+      <div class="member-name">Thierry HOUSSOU</div>
+    </div>
+    <div class="member-card fade-up">
+      <div class="member-role">Trésorière Adjointe</div>
+      <div class="member-name">BOKO A. Armelle</div>
+    </div>
+    <div class="member-card fade-up">
+      <div class="member-role">Affaires Sociales & Culturelles</div>
+      <div class="member-name">ALABI Mansoud</div>
+    </div>
+    <div class="member-card fade-up">
+      <div class="member-role">Chargé de Compte 1</div>
+      <div class="member-name">Sèdami BOÏTINE</div>
+    </div>
+    <div class="member-card fade-up">
+      <div class="member-role">Chargé de Compte 2</div>
+      <div class="member-name">HOUNMENOU David</div>
+    </div>
+  </div>
+</section>
+
+<!-- FORMATIONS -->
+<section class="section-wrap">
+  <div class="section-header fade-up">
+    <span class="section-label">Renforcement de capacités</span>
+    <h2>Formations proposées aux membres</h2>
+    <div class="section-divider"></div>
+    <p>L'UNSEB Adjarra met un accent particulier sur le développement des compétences académiques, pratiques et professionnelles de ses membres.</p>
+  </div>
+  <div class="formations-grid">
+    <div class="formation-card fade-up">
+      <div class="icon">🧵</div>
+      <h3>Formation en perles</h3>
+      <p>Une formation pratique en artisanat pour développer l'esprit entrepreneurial. Les étudiants apprennent à créer des bijoux et ornements en perles, une compétence valorisable sur le marché.</p>
+    </div>
+    <div class="formation-card fade-up">
+      <div class="icon">📊</div>
+      <h3>Outils de collecte de données</h3>
+      <p>Initiation aux techniques modernes de collecte et de traitement de données (questionnaires, enquêtes de terrain, outils numériques). Compétences clés pour les travaux académiques et la recherche.</p>
+    </div>
+    <div class="formation-card fade-up">
+      <div class="icon">🎓</div>
+      <h3>TD gratuits & Tutorat</h3>
+      <p>Travaux dirigés organisés par des pairs et des enseignants bénévoles, accessibles à tous les étudiants sans condition. Un soutien académique concret pour toutes les filières.</p>
+    </div>
+    <div class="formation-card fade-up">
+      <div class="icon">💼</div>
+      <h3>Leadership & Développement personnel</h3>
+      <p>Ateliers de développement personnel, de prise de parole en public, de gestion de projet et d'entrepreneuriat pour former les leaders de demain.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PHOTO GROUPE -->
+<section style="padding:0 6% 72px">
+  <div style="max-width:1100px;margin:0 auto">
+    <img src="unseb1.jpeg" alt="La communauté UNSEB Adjarra" style="width:100%;height:340px;object-fit:cover;border-radius:var(--rl);box-shadow:var(--shadow-lg)" class="fade-up"/>
+    <p style="text-align:center;font-size:.84rem;color:var(--texte3);margin-top:14px">La communauté UNSEB Adjarra — unie pour défendre les droits étudiants</p>
+  </div>
+</section>
+
+<!-- SLOGAN -->
+<section class="slogan-band">
+  <blockquote>« Que les idées s'affrontent et que celles qui sont justes triomphent et fassent force de loi »</blockquote>
+  <cite>— UNSEB, Sous-section d'Adjarra</cite>
+</section>
+
+<!-- FOOTER -->
+
+<!-- TIMELINE HISTORIQUE (site2) -->
+<section class="section-wrap bg-gris">
+  <div class="section-header fade-up">
+    <span class="section-label">Notre histoire</span>
+    <h2>Les grandes étapes de l'UNSEB Adjarra</h2>
+    <div class="section-divider"></div>
+  </div>
+  <div class="timeline-wrap fade-up">
+    <div class="timeline-item">
+      <div class="timeline-dot active"></div>
+      <div class="timeline-year">FONDATION</div>
+      <div class="timeline-content">
+        <h3>Création de la Sous-section UNSEB d'Adjarra</h3>
+        <p>Dans le sillage de l'UNSEB nationale, la sous-section d'Adjarra est fondée pour représenter les étudiants du Centre Universitaire d'Adjarra. Elle s'inscrit dans la dynamique nationale de défense des droits estudiants.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-year">DÉVELOPPEMENT</div>
+      <div class="timeline-content">
+        <h3>Structuration des sous-organisations</h3>
+        <p>Création du CECAL (Cercle Culturel des Arts et Loisirs) et du COGHERES (Commission de Gestion de l'Hygiène, de la Restauration et des Services), donnant à la sous-section ses deux bras opérationnels.</p>
+        <div class="timeline-note">Le CECAL et le COGHERES deviennent les sous-structures les plus visibles du campus.</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-year">EXPANSION</div>
+      <div class="timeline-content">
+        <h3>Lancement des TD gratuits et du soutien académique</h3>
+        <p>Face aux difficultés académiques des étudiants, l'UNSEB Adjarra lance ses Travaux Dirigés gratuits, ouverts à toutes les filières. Cette initiative devient l'une des plus appréciées du campus.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot active"></div>
+      <div class="timeline-year">2026 — MAINTENANT</div>
+      <div class="timeline-content">
+        <h3>Mandat actif — Plus de 200 membres</h3>
+        <p>Sous le mandat actuel, l'UNSEB Adjarra compte plus de 200 membres actifs, conduit des assemblées générales hebdomadaires et lance son espace études numérique pour accompagner la réussite académique.</p>
+        <div class="timeline-note">🎯 Objectif 2026 : atteindre 300 membres actifs et couvrir toutes les filières dans l'espace études.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo-wrap">
+        <img src="logo.jpeg" alt="Logo UNSEB"/>
+        <div class="footer-logo-text">UNSEB <span>Adjarra</span></div>
+      </div>
+      <p>Union Nationale des Scolaires et Étudiants du Bénin — Sous-section d'Adjarra. Défendre, représenter, agir.</p>
+    </div>
+        <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="unseb.html">Accueil</a></li>
+        <li><a href="apropos.html">À propos</a></li>
+        <li><a href="activites.html">Activités</a></li>
+        <li><a href="etudes.html">📚 Études</a></li>
+        <li><a href="calendrier.html">Calendrier</a></li>
+        <li><a href="galerie.html">Galerie</a></li>
+        <li><a href="ressources.html">Ressources</a></li>
+        <li><a href="sondages.html">Sondages</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Espace étudiant</h4>
+      <ul>
+        <li><a href="dashboard.html">Mon dashboard</a></li>
+        <li><a href="profil.html">Mon profil</a></li>
+        <li><a href="sondages.html">Sondages</a></li>
+        <li><a href="ressources.html">Ressources</a></li>
+        <li><a href="chat.html">💬 Chat</a></li>
+        <li><a href="membre.html">🪪 Carte membre</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="tel:0154325324">📞 01 54 32 53 24</a></li>
+        <li><a href="tel:0145884821">📱 01 45 88 48 21</a></li>
+        <li><a href="https://wa.me/22901543253240" target="_blank">💬 WhatsApp</a></li>
+        <li><a href="mailto:unseb.adjarra@gmail.com">✉ unseb.adjarra@gmail.com</a></li>
+        <li><a href="contact.html">Formulaire de contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 UNSEB Adjarra — Tous droits réservés</span>
+    <span>Centre Universitaire d'Adjarra, Bénin</span>
+    <a href="admin.html" style="font-size:.7rem;color:rgba(255,255,255,.1);transition:color .3s" onmouseover="this.style.color='rgba(255,255,255,.5)'" onmouseout="this.style.color='rgba(255,255,255,.1)'">⚙</a>
+  </div>
+</footer>
+
+
+
+
+
+
+<script>
+(function(){
+  // Mark active nav link
+  const page = window.location.pathname.split('/').pop() || 'unseb.html';
+  document.querySelectorAll('.nav-links a[data-page]').forEach(a => {
+    if (a.getAttribute('href') === page) a.classList.add('active');
+  });
+
+  // Mobile nav
+  const toggle = document.getElementById('navToggle');
+  const links  = document.getElementById('navLinks');
+  if (toggle) toggle.addEventListener('click', () => links.classList.toggle('open'));
+
+  // Fade-up observer
+  document.querySelectorAll('.fade-up').forEach(el =>
+    new IntersectionObserver(entries => entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    }), { threshold: .1 }).observe(el)
+  );
+
+  // Session nav
+  const nav = document.getElementById('navSession');
+  if (!nav) return;
+  let session = null;
+  try { session = JSON.parse(localStorage.getItem('unseb_session')); } catch(e) {}
+
+  if (session) {
+    const isAdmin = session.role === 'admin';
+    nav.innerHTML = `
+      <a href="dashboard.html" style="display:flex;align-items:center;gap:7px;padding:5px 13px 5px 6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:30px;color:rgba(255,255,255,.85);font-size:.82rem;font-weight:600;text-decoration:none;transition:all .22s" onmouseover="this.style.background='rgba(255,255,255,.14)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+        <span style="width:24px;height:24px;border-radius:50%;background:var(--rouge-vif);display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#fff;flex-shrink:0">${session.prenom[0].toUpperCase()}</span>
+        ${session.prenom}${isAdmin ? ' <span style=\"font-size:.62rem;background:var(--rouge-vif);color:#fff;padding:1px 6px;border-radius:20px;margin-left:2px\">Admin</span>' : ''}
+      </a>`;
+  } else {
+    nav.innerHTML = `
+      <a href="login.html" style="padding:7px 16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:30px;color:rgba(255,255,255,.75);font-size:.82rem;font-weight:600;text-decoration:none;transition:all .22s;white-space:nowrap" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+        Se connecter
+      </a>`;
+  }
+
+  // Chat notification badge
+  try {
+    if (!session) return;
+    const lastSeen = parseInt(localStorage.getItem('unseb_chat_last_seen') || '0');
+    let newMsgs = 0;
+    ['general','cecal','cogheres','academique','annonces'].forEach(ch => {
+      const msgs = JSON.parse(localStorage.getItem('unseb_chat_' + ch) || '[]');
+      newMsgs += msgs.filter(m => m.ts > lastSeen && m.s !== session.email).length;
+    });
+    if (newMsgs > 0) {
+      const chatLink = document.getElementById('navChat');
+      if (chatLink) {
+        const badge = document.createElement('span');
+        badge.style.cssText = 'background:var(--rouge-vif);color:#fff;font-size:.58rem;font-weight:800;padding:1px 5px;border-radius:20px;margin-left:3px;vertical-align:middle';
+        badge.textContent = newMsgs > 9 ? '9+' : newMsgs;
+        chatLink.appendChild(badge);
+      }
+    }
+  } catch(e) {}
+
+  // Emergency banner
+  try {
+    const b = JSON.parse(localStorage.getItem('unseb_banniere') || 'null');
+    if (!b || !b.active) return;
+    const bgs = { urgent: 'rgba(200,16,46,.97)', info: 'rgba(0,80,160,.97)', success: 'rgba(22,101,52,.97)' };
+    const div = document.createElement('div');
+    div.style.cssText = `background:${bgs[b.type]||bgs.urgent};color:#fff;padding:10px 44px 10px 20px;text-align:center;font-family:'Outfit',sans-serif;font-size:.87rem;font-weight:600;position:relative;z-index:999;line-height:1.5`;
+    div.innerHTML = b.msg + `<button onclick="this.parentElement.remove()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.7);font-size:1.1rem;cursor:pointer;padding:4px">✕</button>`;
+    document.body.insertBefore(div, document.body.firstChild);
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>

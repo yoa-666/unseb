@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — UNSEB Adjarra</title>
+  <link rel="stylesheet" href="unseb.css"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Outfit',sans-serif;background:#0d0d0d;color:#fff;display:flex;min-height:100vh}
+
+    /* SIDEBAR */
+    .sidebar{width:240px;background:#111;border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;z-index:200;overflow-y:auto}
+    .sb-logo{padding:22px 20px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.07)}
+    .sb-logo img{width:36px;height:36px;border-radius:50%;object-fit:contain;background:#fff;padding:2px;border:2px solid rgba(200,16,46,.4)}
+    .sb-logo-text{font-size:.95rem;font-weight:800;color:#fff}.sb-logo-text span{color:#e8182e}
+    .sb-admin-badge{margin:12px 16px;background:rgba(200,16,46,.15);border:1px solid rgba(200,16,46,.3);border-radius:8px;padding:8px 12px;font-size:.76rem;color:rgba(255,255,255,.6)}
+    .sb-admin-badge strong{color:#e8182e;display:block;font-size:.82rem}
+    .sb-nav{padding:8px 10px;flex:1}
+    .sb-section{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:14px 8px 6px}
+    .sb-link{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;color:rgba(255,255,255,.45);font-size:.86rem;font-weight:500;cursor:pointer;transition:all .2s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
+    .sb-link:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85)}
+    .sb-link.active{background:rgba(200,16,46,.15);color:#fff;border-left:3px solid #e8182e;padding-left:7px}
+    .sb-link .icon{font-size:1rem;flex-shrink:0;width:20px;text-align:center}
+    .sb-badge{margin-left:auto;background:#e8182e;color:#fff;font-size:.6rem;font-weight:800;padding:2px 6px;border-radius:10px}
+    .sb-bottom{padding:14px 16px;border-top:1px solid rgba(255,255,255,.07)}
+    .sb-logout{width:100%;padding:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:rgba(255,255,255,.6);font-family:'Outfit',sans-serif;font-size:.84rem;cursor:pointer;transition:all .2s}
+    .sb-logout:hover{background:rgba(200,16,46,.15);border-color:rgba(200,16,46,.3);color:#e8182e}
+
+    /* MAIN */
+    .main{margin-left:240px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{background:#111;border-bottom:1px solid rgba(255,255,255,.07);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .topbar-title{font-size:1rem;font-weight:700;color:#fff}
+    .topbar-right{display:flex;align-items:center;gap:12px}
+    .topbar-time{font-size:.78rem;color:rgba(255,255,255,.35)}
+    .content{padding:28px;flex:1}
+
+    /* PANNEAUX */
+    .panel{display:none}
+    .panel.active{display:block}
+
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+    .stat-card{background:#161616;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px 22px;position:relative;overflow:hidden}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+    .stat-card.rouge::before{background:linear-gradient(90deg,#8a0a1e,#e8182e)}
+    .stat-card.bleu::before{background:linear-gradient(90deg,#1e3a8a,#3b82f6)}
+    .stat-card.vert::before{background:linear-gradient(90deg,#14532d,#22c55e)}
+    .stat-card.orange::before{background:linear-gradient(90deg,#92400e,#f59e0b)}
+    .stat-num{font-size:2rem;font-weight:800;font-family:'Playfair Display',serif;color:#fff;display:block}
+    .stat-lbl{font-size:.78rem;color:rgba(255,255,255,.4);margin-top:4px}
+    .stat-sub{font-size:.72rem;color:rgba(255,255,255,.25);margin-top:2px}
+
+    /* TABLES */
+    .card{background:#161616;border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;margin-bottom:20px}
+    .card-head{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    .card-head h3{font-size:.95rem;font-weight:700;color:#fff}
+    .card-body{padding:0}
+    table{width:100%;border-collapse:collapse}
+    th{padding:11px 16px;text-align:left;font-size:.69rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);border-bottom:1px solid rgba(255,255,255,.06)}
+    td{padding:12px 16px;font-size:.86rem;color:rgba(255,255,255,.75);border-bottom:1px solid rgba(255,255,255,.04)}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:rgba(255,255,255,.02)}
+    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+    .badge.en_attente{background:rgba(245,158,11,.15);color:#f59e0b;border:1px solid rgba(245,158,11,.3)}
+    .badge.valide,.badge.accepte{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.25)}
+    .badge.suspendu,.badge.refuse{background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.25)}
+    .badge.generee{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.25)}
+    .badge.approuvee{background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.25)}
+    .badge.imprimee{background:rgba(168,85,247,.12);color:#c084fc;border:1px solid rgba(168,85,247,.25)}
+    .badge.livree{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.25)}
+    .btn-sm{padding:5px 12px;border-radius:7px;font-size:.76rem;font-weight:700;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all .2s}
+    .btn-green{background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.3)}
+    .btn-green:hover{background:#22c55e;color:#fff}
+    .btn-red{background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.25)}
+    .btn-red:hover{background:#ef4444;color:#fff}
+    .btn-blue{background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.25)}
+    .btn-blue:hover{background:#3b82f6;color:#fff}
+    .btn-orange{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.25)}
+    .btn-orange:hover{background:#f59e0b;color:#111}
+    .btn-primary{background:#e8182e;color:#fff;padding:8px 18px;border-radius:9px;font-size:.84rem;font-weight:700;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all .2s}
+    .btn-primary:hover{background:#c8102e}
+    .actions-wrap{display:flex;gap:6px;flex-wrap:wrap}
+
+    /* FILTRE */
+    .filter-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .filter-bar select,.filter-bar input{background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:rgba(255,255,255,.7);padding:7px 12px;font-size:.83rem;font-family:'Outfit',sans-serif;outline:none}
+    .filter-bar select:focus,.filter-bar input:focus{border-color:#e8182e}
+
+    /* FORMULAIRE MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:32px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:fadeUp .3s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .modal-box h3{font-size:1.1rem;font-weight:700;margin-bottom:20px;color:#fff}
+    .modal-form-group{margin-bottom:16px}
+    .modal-form-group label{display:block;font-size:.74rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:7px}
+    .modal-form-group input,.modal-form-group select,.modal-form-group textarea{width:100%;padding:11px 14px;background:#0d0d0d;border:1.5px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-family:'Outfit',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s}
+    .modal-form-group input:focus,.modal-form-group select:focus,.modal-form-group textarea:focus{border-color:#e8182e}
+    .modal-form-group textarea{min-height:90px;resize:vertical}
+    .modal-form-group select option{background:#1a1a1a;color:#fff}
+    .modal-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+    .btn-cancel{padding:9px 20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:9px;color:rgba(255,255,255,.6);font-family:'Outfit',sans-serif;font-size:.86rem;cursor:pointer}
+    .btn-cancel:hover{background:rgba(255,255,255,.12)}
+
+    /* GALERIE ADMIN */
+    .galerie-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:16px}
+    .galerie-item{position:relative;border-radius:10px;overflow:hidden;background:#0d0d0d;aspect-ratio:1;border:1px solid rgba(255,255,255,.07)}
+    .galerie-item img,.galerie-item video{width:100%;height:100%;object-fit:cover}
+    .galerie-item-actions{position:absolute;top:6px;right:6px;display:flex;gap:4px;opacity:0;transition:opacity .2s}
+    .galerie-item:hover .galerie-item-actions{opacity:1}
+    .galerie-del{background:rgba(239,68,68,.85);color:#fff;border:none;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+
+    /* CARTE PREVIEW */
+    .carte-preview{width:380px;max-width:100%;height:230px;border-radius:18px;background:linear-gradient(135deg,#0d0d0d 0%,#1a0000 45%,#2d0505 100%);position:relative;overflow:hidden;color:#fff;padding:20px 24px;display:flex;flex-direction:column;justify-content:space-between;margin:0 auto 12px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+    .carte-preview::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#8a0a1e,#e8182e,#ff6a6a,#e8182e,#8a0a1e)}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:#1a1a1a;color:#fff;padding:12px 18px;border-radius:10px;border-left:4px solid #22c55e;font-size:.87rem;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:slideIn .3s ease;max-width:320px}
+    .toast.error{border-left-color:#ef4444}
+    @keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* LOADING */
+    .loading-row td{text-align:center;padding:40px;color:rgba(255,255,255,.25);font-style:italic}
+    .upload-zone{border:2px dashed rgba(255,255,255,.15);border-radius:10px;padding:30px;text-align:center;cursor:pointer;transition:border-color .2s}
+    .upload-zone:hover{border-color:#e8182e}
+    .upload-zone input{display:none}
+    .upload-zone p{color:rgba(255,255,255,.4);font-size:.85rem;margin-top:8px}
+
+    @media(max-width:900px){.sidebar{transform:translateX(-240px)}.main{margin-left:0}.stats-row{grid-template-columns:1fr 1fr}}
+    @media(max-width:600px){.stats-row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <img src="logo.jpeg" alt="Logo"/>
+    <div class="sb-logo-text">UNSEB <span>Adjarra</span></div>
+  </div>
+  <div class="sb-admin-badge">
+    <strong id="sbAdminName">Admin</strong>
+    Panneau d'administration
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Tableau de bord</div>
+    <button class="sb-link active" onclick="showPanel('dashboard')"><span class="icon">📊</span> Vue d'ensemble</button>
+
+    <div class="sb-section">Membres</div>
+    <button class="sb-link" onclick="showPanel('membres')"><span class="icon">👥</span> Membres <span class="sb-badge" id="badgePending">0</span></button>
+    <button class="sb-link" onclick="showPanel('inscriptions')"><span class="icon">📋</span> Inscriptions <span class="sb-badge" id="badgeInscrip">0</span></button>
+
+    <div class="sb-section">Contenu</div>
+    <button class="sb-link" onclick="showPanel('calendrier')"><span class="icon">📅</span> Calendrier</button>
+    <button class="sb-link" onclick="showPanel('galerie')"><span class="icon">🖼️</span> Galerie</button>
+    <button class="sb-link" onclick="showPanel('cartes')"><span class="icon">🪪</span> Cartes membres <span class="sb-badge" id="badgeCartes">0</span></button>
+
+    <div class="sb-section">Site</div>
+    <button class="sb-link" onclick="window.open('unseb.html','_blank')"><span class="icon">🌐</span> Voir le site</button>
+    <button class="sb-link" onclick="window.open('chat.html','_blank')"><span class="icon">💬</span> Chat</button>
+  </nav>
+  <div class="sb-bottom">
+    <button class="sb-logout" onclick="doLogout()">🚪 Se déconnecter</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <span class="topbar-title" id="topbarTitle">Vue d'ensemble</span>
+    <div class="topbar-right">
+      <span class="topbar-time" id="topbarTime"></span>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="stats-row" id="statsRow">
+        <div class="stat-card rouge"><span class="stat-num" id="statTotal">—</span><div class="stat-lbl">Membres total</div></div>
+        <div class="stat-card orange"><span class="stat-num" id="statAttente">—</span><div class="stat-lbl">En attente</div><div class="stat-sub">à valider</div></div>
+        <div class="stat-card vert"><span class="stat-num" id="statValides">—</span><div class="stat-lbl">Membres validés</div></div>
+        <div class="stat-card bleu"><span class="stat-num" id="statCartes">—</span><div class="stat-lbl">Cartes générées</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>⏳ Demandes en attente de validation</h3></div>
+        <div class="card-body"><table><thead><tr><th>Membre</th><th>Email</th><th>Filière</th><th>Date</th><th>Actions</th></tr></thead><tbody id="tbPending"><tr class="loading-row"><td colspan="5">Chargement…</td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- MEMBRES -->
+    <div class="panel" id="panel-membres">
+      <div class="card">
+        <div class="card-head">
+          <h3>👥 Gestion des membres</h3>
+          <div class="filter-bar">
+            <select id="filtreStatutMembre" onchange="loadMembres()">
+              <option value="">Tous les statuts</option>
+              <option value="en_attente">En attente</option>
+              <option value="valide">Validés</option>
+              <option value="suspendu">Suspendus</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Membre</th><th>Email</th><th>Filière / Niveau</th><th>Tél.</th><th>Statut</th><th>Inscription</th><th>Actions</th></tr></thead>
+            <tbody id="tbMembres"><tr class="loading-row"><td colspan="7">Chargement…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSCRIPTIONS SECTIONS -->
+    <div class="panel" id="panel-inscriptions">
+      <div class="card">
+        <div class="card-head">
+          <h3>📋 Inscriptions aux sections</h3>
+          <div class="filter-bar">
+            <select id="filtreSection" onchange="loadInscriptions()">
+              <option value="">Toutes sections</option>
+              <option value="CECAL">CECAL</option>
+              <option value="COGHERES">COGHERES</option>
+              <option value="TD">TD Gratuits</option>
+              <option value="INFORMATIQUE">Informatique</option>
+            </select>
+            <select id="filtreStatutInscrip" onchange="loadInscriptions()">
+              <option value="">Tous statuts</option>
+              <option value="en_attente">En attente</option>
+              <option value="accepte">Acceptées</option>
+              <option value="refuse">Refusées</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Membre</th><th>Section</th><th>Spécialité</th><th>Message</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="tbInscriptions"><tr class="loading-row"><td colspan="7">Chargement…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDRIER -->
+    <div class="panel" id="panel-calendrier">
+      <div class="card">
+        <div class="card-head">
+          <h3>📅 Événements & Annonces</h3>
+          <button class="btn-primary" onclick="openModal('modalEvent')">+ Ajouter un événement</button>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Titre</th><th>Type</th><th>Date</th><th>Lieu</th><th>Annonce</th><th>Actions</th></tr></thead>
+            <tbody id="tbEvenements"><tr class="loading-row"><td colspan="6">Chargement…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- GALERIE -->
+    <div class="panel" id="panel-galerie">
+      <div class="card">
+        <div class="card-head">
+          <h3>🖼️ Galerie photos & vidéos</h3>
+          <button class="btn-primary" onclick="openModal('modalGalerie')">+ Ajouter un média</button>
+        </div>
+        <div class="galerie-grid" id="galerieGrid"><p style="padding:20px;color:rgba(255,255,255,.3)">Chargement…</p></div>
+      </div>
+    </div>
+
+    <!-- CARTES MEMBRES -->
+    <div class="panel" id="panel-cartes">
+      <div class="card">
+        <div class="card-head">
+          <h3>🪪 Cartes membres</h3>
+          <div class="filter-bar">
+            <select id="filtreStatutCarte" onchange="loadCartes()">
+              <option value="">Tous statuts</option>
+              <option value="generee">Générées</option>
+              <option value="approuvee">Approuvées</option>
+              <option value="imprimee">Imprimées</option>
+              <option value="livree">Livrées</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Membre</th><th>N° Carte</th><th>Filière</th><th>Date génération</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="tbCartes"><tr class="loading-row"><td colspan="6">Chargement…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- MODAL ÉVÉNEMENT -->
+<div class="modal-overlay" id="modalEvent">
+  <div class="modal-box">
+    <h3 id="modalEventTitle">📅 Nouvel événement</h3>
+    <input type="hidden" id="eventId"/>
+    <div class="modal-form-group">
+      <label>Titre *</label>
+      <input type="text" id="eventTitre" placeholder="Titre de l'événement"/>
+    </div>
+    <div class="modal-form-group">
+      <label>Description *</label>
+      <textarea id="eventDesc" placeholder="Description complète…"></textarea>
+    </div>
+    <div class="modal-row">
+      <div class="modal-form-group">
+        <label>Date & heure *</label>
+        <input type="datetime-local" id="eventDate"/>
+      </div>
+      <div class="modal-form-group">
+        <label>Type</label>
+        <select id="eventType">
+          <option value="academique">Académique</option>
+          <option value="culturel">Culturel</option>
+          <option value="AG">Assemblée Générale</option>
+          <option value="formation">Formation</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-form-group">
+      <label>Lieu</label>
+      <input type="text" id="eventLieu" placeholder="Ex: Salle 3, Campus Adjarra"/>
+    </div>
+    <div class="modal-form-group">
+      <label>Photo (optionnel)</label>
+      <input type="file" id="eventPhoto" accept="image/*" style="color:rgba(255,255,255,.6);width:100%"/>
+    </div>
+    <div class="modal-form-group">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;font-size:.86rem">
+        <input type="checkbox" id="eventAnnonce" style="width:auto;accent-color:#e8182e"/>
+        Publier aussi comme annonce visible
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modalEvent')">Annuler</button>
+      <button class="btn-primary" onclick="saveEvent()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GALERIE -->
+<div class="modal-overlay" id="modalGalerie">
+  <div class="modal-box">
+    <h3>🖼️ Ajouter un média</h3>
+    <div class="modal-form-group">
+      <label>Type de média</label>
+      <select id="galerieType">
+        <option value="photo">📷 Photo</option>
+        <option value="video">🎬 Vidéo</option>
+      </select>
+    </div>
+    <div class="modal-form-group">
+      <label>Fichier * (Photo: JPG/PNG/WEBP, Vidéo: MP4/WEBM)</label>
+      <div class="upload-zone" onclick="document.getElementById('galerieFichier').click()">
+        <div style="font-size:2rem">📁</div>
+        <p>Cliquez pour sélectionner un fichier</p>
+        <input type="file" id="galerieFichier" accept="image/*,video/mp4,video/webm"/>
+      </div>
+      <p id="galerieFileName" style="margin-top:8px;font-size:.8rem;color:rgba(255,255,255,.4)"></p>
+    </div>
+    <div class="modal-form-group">
+      <label>Légende</label>
+      <input type="text" id="galerieLegende" placeholder="Description du média"/>
+    </div>
+    <div class="modal-form-group">
+      <label>Catégorie</label>
+      <select id="galerieCategorie">
+        <option value="general">Général</option>
+        <option value="cecal">CECAL</option>
+        <option value="cogheres">COGHERES</option>
+        <option value="academique">Académique</option>
+        <option value="formation">Formation</option>
+        <option value="bureau">Bureau</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modalGalerie')">Annuler</button>
+      <button class="btn-primary" onclick="uploadGalerie()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CARTE DETAIL -->
+<div class="modal-overlay" id="modalCarte">
+  <div class="modal-box" style="max-width:460px">
+    <h3>🪪 Aperçu de la carte</h3>
+    <canvas id="carteCanvas" width="380" height="230" style="border-radius:14px;width:100%;margin-bottom:16px;display:block"></canvas>
+    <div id="carteInfos" style="font-size:.84rem;color:rgba(255,255,255,.5);margin-bottom:16px"></div>
+    <div class="modal-row">
+      <div>
+        <label style="font-size:.72rem;color:rgba(255,255,255,.35);display:block;margin-bottom:6px">CHANGER LE STATUT</label>
+        <select id="carteStatutSelect" style="width:100%;background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px;font-family:'Outfit',sans-serif">
+          <option value="generee">Générée</option>
+          <option value="approuvee">Approuvée</option>
+          <option value="imprimee">Imprimée</option>
+          <option value="livree">Livrée</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button class="btn-primary" onclick="changerStatutCarte()" style="width:100%">Mettre à jour</button>
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn-cancel" onclick="closeModal('modalCarte')">Fermer</button>
+      <button class="btn-primary" id="btnDlCarte" onclick="downloadCarte()" style="background:#3b82f6">⬇ Télécharger (impression)</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+emailjs.init('9-Ta7lluOweVMqDUa');
+
+let SESSION = null;
+let currentCarteId = null;
+let currentCarteData = null;
+
+// ── INIT ────────────────────────────────────────
+(async function init(){
+  // Vérifier session
+  try{
+    const r=await fetch('api/auth.php?action=me');
+    const d=await r.json();
+    if(!d.success||d.user.role!=='admin'){
+      localStorage.removeItem('unseb_session');
+      window.location.href='login.html';return;
+    }
+    SESSION=d.user;
+    localStorage.setItem('unseb_session',JSON.stringify(SESSION));
+    document.getElementById('sbAdminName').textContent=SESSION.prenom+' '+SESSION.nom;
+  }catch(e){
+    // Fallback localStorage si serveur down
+    const s=localStorage.getItem('unseb_session');
+    if(!s){window.location.href='login.html';return;}
+    try{
+      SESSION=JSON.parse(s);
+      if(!SESSION||SESSION.role!=='admin'){window.location.href='login.html';return;}
+      document.getElementById('sbAdminName').textContent=SESSION.prenom+' '+SESSION.nom;
+    }catch(e2){window.location.href='login.html';return;}
+  }
+  loadDashboard();
+  setInterval(updateClock,1000);updateClock();
+})();
+
+function updateClock(){
+  const now=new Date();
+  document.getElementById('topbarTime').textContent=now.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'})+' '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ── NAVIGATION ──────────────────────────────────
+const PANEL_TITLES={dashboard:'Vue d\'ensemble',membres:'Gestion des membres',inscriptions:'Inscriptions aux sections',calendrier:'Calendrier & Événements',galerie:'Galerie médias',cartes:'Cartes membres'};
+
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  document.getElementById('topbarTitle').textContent=PANEL_TITLES[id]||id;
+  // Charger les données du panneau
+  const loaders={membres:loadMembres,inscriptions:loadInscriptions,calendrier:loadEvenements,galerie:loadGalerie,cartes:loadCartes};
+  if(loaders[id])loaders[id]();
+}
+
+// ── TOAST ───────────────────────────────────────
+function toast(msg,type='success'){
+  const t=document.createElement('div');
+  t.className='toast'+(type==='error'?' error':'');
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+
+// ── MODALS ──────────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+
+// ── DASHBOARD ───────────────────────────────────
+async function loadDashboard(){
+  try{
+    const [mRes,cRes]=await Promise.all([
+      fetch('api/membres.php?action=liste').then(r=>r.json()),
+      fetch('api/cartes.php?action=liste_admin').then(r=>r.json())
+    ]);
+    if(mRes.success){
+      const total=mRes.membres.length;
+      const attente=mRes.membres.filter(m=>m.statut==='en_attente').length;
+      const valides=mRes.membres.filter(m=>m.statut==='valide').length;
+      document.getElementById('statTotal').textContent=total;
+      document.getElementById('statAttente').textContent=attente;
+      document.getElementById('statValides').textContent=valides;
+      document.getElementById('badgePending').textContent=attente||'';
+
+      // Tableau des en attente
+      const pending=mRes.membres.filter(m=>m.statut==='en_attente');
+      const tb=document.getElementById('tbPending');
+      if(!pending.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:24px;color:rgba(255,255,255,.3)">Aucune demande en attente ✅</td></tr>';return;}
+      tb.innerHTML=pending.map(m=>`
+        <tr>
+          <td><strong>${m.prenom} ${m.nom}</strong></td>
+          <td style="color:rgba(255,255,255,.5)">${m.email}</td>
+          <td>${m.filiere||'—'} / ${m.niveau||'—'}</td>
+          <td style="color:rgba(255,255,255,.4);font-size:.8rem">${formatDate(m.date_inscription)}</td>
+          <td><div class="actions-wrap">
+            <button class="btn-sm btn-green" onclick="validerMembre(${m.id})">✓ Valider</button>
+            <button class="btn-sm btn-red" onclick="supprimerMembre(${m.id})">✕ Refuser</button>
+          </div></td>
+        </tr>`).join('');
+    }
+    if(cRes.success){
+      document.getElementById('statCartes').textContent=cRes.cartes.length;
+      const nbCartes=cRes.cartes.filter(c=>c.statut==='generee').length;
+      document.getElementById('badgeCartes').textContent=nbCartes||'';
+    }
+  }catch(e){console.error('Dashboard:',e);}
+}
+
+// ── MEMBRES ─────────────────────────────────────
+async function loadMembres(){
+  const statut=document.getElementById('filtreStatutMembre').value;
+  const tb=document.getElementById('tbMembres');
+  tb.innerHTML='<tr class="loading-row"><td colspan="7">Chargement…</td></tr>';
+  try{
+    const url='api/membres.php?action=liste'+(statut?'&statut='+statut:'');
+    const d=await fetch(url).then(r=>r.json());
+    if(!d.success){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:#ef4444">Erreur: '+d.error+'</td></tr>';return;}
+    if(!d.membres.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:rgba(255,255,255,.3)">Aucun membre trouvé.</td></tr>';return;}
+    tb.innerHTML=d.membres.map(m=>`
+      <tr>
+        <td><strong>${m.prenom} ${m.nom}</strong></td>
+        <td style="color:rgba(255,255,255,.5);font-size:.83rem">${m.email}</td>
+        <td style="font-size:.82rem">${m.filiere||'—'} / ${m.niveau||'—'}</td>
+        <td style="font-size:.82rem;color:rgba(255,255,255,.5)">${m.telephone||'—'}</td>
+        <td><span class="badge ${m.statut}">${m.statut}</span></td>
+        <td style="font-size:.78rem;color:rgba(255,255,255,.4)">${formatDate(m.date_inscription)}</td>
+        <td><div class="actions-wrap">
+          ${m.statut==='en_attente'?`<button class="btn-sm btn-green" onclick="validerMembre(${m.id})">✓</button>`:''}
+          ${m.statut==='valide'?`<button class="btn-sm btn-orange" onclick="suspendreMembre(${m.id})">⏸</button>`:''}
+          ${m.statut==='suspendu'?`<button class="btn-sm btn-green" onclick="validerMembre(${m.id})">▶</button>`:''}
+          ${m.role!=='admin'?`<button class="btn-sm btn-red" onclick="supprimerMembre(${m.id})">🗑</button>`:''}
+        </div></td>
+      </tr>`).join('');
+    document.getElementById('badgePending').textContent=d.membres.filter(m=>m.statut==='en_attente').length||'';
+  }catch(e){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:#ef4444;padding:20px">Erreur serveur.</td></tr>';}
+}
+
+async function validerMembre(id){
+  try{
+    const d=await fetch('api/membres.php?action=valider',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    if(!d.success){toast(d.error,'error');return;}
+    // Notifier le membre par email
+    if(d.emailjs_data){
+      const ej=d.emailjs_data;
+      try{await emailjs.send(ej.service_id,ej.template_id,{to_email:ej.to_email,to_name:ej.to_name,subject:ej.subject,message:ej.message});}
+      catch(e){console.warn('EmailJS:',e);}
+    }
+    toast('Membre validé et notifié par email ✅');
+    loadMembres();loadDashboard();
+  }catch(e){toast('Erreur serveur','error');}
+}
+
+async function suspendreMembre(id){
+  if(!confirm('Suspendre ce membre ?'))return;
+  try{
+    const d=await fetch('api/membres.php?action=suspendre',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    if(!d.success){toast(d.error,'error');return;}
+    toast('Membre suspendu.');loadMembres();
+  }catch(e){toast('Erreur serveur','error');}
+}
+
+async function supprimerMembre(id){
+  if(!confirm('Supprimer/refuser ce membre définitivement ?'))return;
+  try{
+    const d=await fetch('api/membres.php?action=supprimer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    if(!d.success){toast(d.error,'error');return;}
+    toast('Membre supprimé.');loadMembres();loadDashboard();
+  }catch(e){toast('Erreur serveur','error');}
+}
+
+// ── INSCRIPTIONS ─────────────────────────────────
+async function loadInscriptions(){
+  const section=document.getElementById('filtreSection').value;
+  const statut=document.getElementById('filtreStatutInscrip').value;
+  const tb=document.getElementById('tbInscriptions');
+  tb.innerHTML='<tr class="loading-row"><td colspan="7">Chargement…</td></tr>';
+  try{
+    let url='api/inscriptions.php?action=liste_admin';
+    if(section)url+='&section='+section;
+    if(statut)url+='&statut='+statut;
+    const d=await fetch(url).then(r=>r.json());
+    if(!d.success){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:#ef4444">'+d.error+'</td></tr>';return;}
+    if(!d.inscriptions.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:rgba(255,255,255,.3)">Aucune inscription.</td></tr>';return;}
+    document.getElementById('badgeInscrip').textContent=d.inscriptions.filter(i=>i.statut==='en_attente').length||'';
+    tb.innerHTML=d.inscriptions.map(i=>`
+      <tr>
+        <td><strong>${i.prenom} ${i.nom}</strong><br><small style="color:rgba(255,255,255,.4)">${i.email}</small></td>
+        <td><span class="badge valide" style="background:rgba(99,102,241,.15);color:#818cf8;border-color:rgba(99,102,241,.3)">${i.section}</span></td>
+        <td style="font-size:.82rem;color:rgba(255,255,255,.5)">${i.domaine||'—'}</td>
+        <td style="font-size:.8rem;color:rgba(255,255,255,.4);max-width:180px;overflow:hidden;text-overflow:ellipsis">${i.message||'—'}</td>
+        <td style="font-size:.78rem;color:rgba(255,255,255,.4)">${formatDate(i.date_inscription)}</td>
+        <td><span class="badge ${i.statut}">${i.statut}</span></td>
+        <td><div class="actions-wrap">
+          ${i.statut==='en_attente'?`<button class="btn-sm btn-green" onclick="validerInscription(${i.id})">✓</button><button class="btn-sm btn-red" onclick="refuserInscription(${i.id})">✕</button>`:''}
+        </div></td>
+      </tr>`).join('');
+  }catch(e){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:#ef4444;padding:20px">Erreur serveur.</td></tr>';}
+}
+
+async function validerInscription(id){
+  try{
+    const d=await fetch('api/inscriptions.php?action=valider',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    if(!d.success){toast(d.error,'error');return;}
+    if(d.emailjs_data){
+      const ej=d.emailjs_data;
+      try{await emailjs.send(ej.service_id,ej.template_id,{to_email:ej.to_email,to_name:ej.to_name,subject:ej.subject,message:ej.message});}
+      catch(e){console.warn('EmailJS:',e);}
+    }
+    toast('Inscription validée et membre notifié ✅');loadInscriptions();
+  }catch(e){toast('Erreur serveur','error');}
+}
+
+async function refuserInscription(id){
+  if(!confirm('Refuser cette inscription ?'))return;
+  try{
+    const d=await fetch('api/inscriptions.php?action=refuser',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    toast(d.success?'Inscription refusée.':d.error,d.success?'success':'error');
+    if(d.success)loadInscriptions();
+  }catch(e){toast('Erreur serveur','error');}
+}
+
+// ── ÉVÉNEMENTS ──────────────────────────────────
+async function loadEvenements(){
+  const tb=document.getElementById('tbEvenements');
+  tb.innerHTML='<tr class="loading-row"><td colspan="6">Chargement…</td></tr>';
+  try{
+    const d=await fetch('api/evenements.php?action=liste').then(r=>r.json());
+    if(!d.success){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:#ef4444">'+d.error+'</td></tr>';return;}
+    if(!d.evenements.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:rgba(255,255,255,.3)">Aucun événement.</td></tr>';return;}
+    const TYPES={academique:'🎓',culturel:'🎭',AG:'🗣️',formation:'💻',autre:'📌'};
+    tb.innerHTML=d.evenements.map(e=>`
+      <tr>
+        <td><strong>${e.titre}</strong>${e.photo_url?`<img src="${e.photo_url}" style="width:36px;height:36px;border-radius:6px;object-fit:cover;margin-left:8px;vertical-align:middle" onerror="this.remove()">`:''}
+        </td>
+        <td><span style="font-size:1.1rem">${TYPES[e.type]||'📌'}</span> ${e.type}</td>
+        <td style="font-size:.82rem">${formatDateTime(e.date_event)}</td>
+        <td style="font-size:.82rem;color:rgba(255,255,255,.5)">${e.lieu||'—'}</td>
+        <td>${e.est_annonce?'<span class="badge valide">📢 Oui</span>':'<span style="color:rgba(255,255,255,.3);font-size:.8rem">Non</span>'}</td>
+        <td><div class="actions-wrap">
+          <button class="btn-sm btn-blue" onclick="editEvent(${JSON.stringify(e).replace(/"/g,'&quot;')})">✏️</button>
+          <button class="btn-sm btn-red" onclick="supprimerEvent(${e.id})">🗑</button>
+        </div></td>
+      </tr>`).join('');
+  }catch(e){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:#ef4444;padding:20px">Erreur serveur.</td></tr>';}
+}
+
+function editEvent(ev){
+  document.getElementById('eventId').value=ev.id||'';
+  document.getElementById('eventTitre').value=ev.titre||'';
+  document.getElementById('eventDesc').value=ev.description||'';
+  document.getElementById('eventDate').value=(ev.date_event||'').replace(' ','T').substr(0,16);
+  document.getElementById('eventType').value=ev.type||'autre';
+  document.getElementById('eventLieu').value=ev.lieu||'';
+  document.getElementById('eventAnnonce').checked=!!ev.est_annonce;
+  document.getElementById('modalEventTitle').textContent='✏️ Modifier l\'événement';
+  openModal('modalEvent');
+}
+
+async function saveEvent(){
+  const id=document.getElementById('eventId').value;
+  const titre=document.getElementById('eventTitre').value.trim();
+  const desc=document.getElementById('eventDesc').value.trim();
+  const date=document.getElementById('eventDate').value;
+  if(!titre||!desc||!date){toast('Titre, description et date requis.','error');return;}
+
+  const fd=new FormData();
+  fd.append('titre',titre);
+  fd.append('description',desc);
+  fd.append('date_event',date);
+  fd.append('type',document.getElementById('eventType').value);
+  fd.append('lieu',document.getElementById('eventLieu').value);
+  fd.append('est_annonce',document.getElementById('eventAnnonce').checked?1:0);
+  const photoFile=document.getElementById('eventPhoto').files[0];
+  if(photoFile)fd.append('photo',photoFile);
+  if(id)fd.append('id',id);
+
+  const action=id?'modifier':'creer';
+  try{
+    const d=await fetch('api/evenements.php?action='+action,{method:'POST',body:fd}).then(r=>r.json());
+    if(!d.success){toast(d.error,'error');return;}
+    toast(id?'Événement modifié ✅':'Événement créé ✅');
+    closeModal('modalEvent');
+    document.getElementById('eventId').value='';
+    document.getElementById('modalEventTitle').textContent='📅 Nouvel événement';
+    document.getElementById('eventPhoto').value='';
+    loadEvenements();
+  }catch(e){toast('Erreur serveur','error');}
+}
+
+async function supprimerEvent(id){
+  if(!confirm('Supprimer cet événement ?'))return;
+  try{
+    const d=await fetch('api/evenements.php?action=supprimer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    toast(d.success?'Événement supprimé.':d.error,d.success?'success':'error');
+    if(d.success)loadEvenements();
+  }catch(e){toast('Erreur serveur','error');}
+}
+
+// ── GALERIE ─────────────────────────────────────
+async function loadGalerie(){
+  const grid=document.getElementById('galerieGrid');
+  grid.innerHTML='<p style="padding:20px;color:rgba(255,255,255,.3)">Chargement…</p>';
+  try{
+    const d=await fetch('api/galerie.php?action=liste').then(r=>r.json());
+    if(!d.success||!d.galerie.length){grid.innerHTML='<p style="padding:20px;color:rgba(255,255,255,.3)">Aucun média.</p>';return;}
+    grid.innerHTML=d.galerie.map(item=>`
+      <div class="galerie-item">
+        ${item.type==='photo'
+          ?`<img src="${item.url}" alt="${item.legende||''}" onerror="this.src='logo.jpeg'">`
+          :`<video src="${item.url}" preload="metadata"></video>`
+        }
+        <div class="galerie-item-actions">
+          <button class="galerie-del" onclick="supprimerMedia(${item.id})" title="Supprimer">🗑</button>
+        </div>
+        ${item.legende?`<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);padding:5px 8px;font-size:.72rem;color:rgba(255,255,255,.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.legende}</div>`:''}
+      </div>`).join('');
+  }catch(e){grid.innerHTML='<p style="padding:20px;color:#ef4444">Erreur serveur.</p>';}
+}
+
+document.getElementById('galerieFichier').addEventListener('change',function(){
+  const f=this.files[0];
+  document.getElementById('galerieFileName').textContent=f?f.name+' ('+Math.round(f.size/1024)+' KB)':'';
+  // Auto-détection type
+  if(f&&f.type.startsWith('video'))document.getElementById('galerieType').value='video';
+  else document.getElementById('galerieType').value='photo';
+});
+
+async function uploadGalerie(){
+  const file=document.getElementById('galerieFichier').files[0];
+  if(!file){toast('Sélectionnez un fichier.','error');return;}
+  const fd=new FormData();
+  fd.append('fichier',file);
+  fd.append('type',document.getElementById('galerieType').value);
+  fd.append('legende',document.getElementById('galerieLegende').value);
+  fd.append('categorie',document.getElementById('galerieCategorie').value);
+  try{
+    const btn=document.querySelector('#modalGalerie .btn-primary');
+    btn.disabled=true;btn.textContent='Upload en cours…';
+    const d=await fetch('api/galerie.php?action=ajouter',{method:'POST',body:fd}).then(r=>r.json());
+    btn.disabled=false;btn.textContent='Ajouter';
+    if(!d.success){toast(d.error,'error');return;}
+    toast('Média ajouté à la galerie ✅');
+    closeModal('modalGalerie');
+    document.getElementById('galerieFichier').value='';
+    document.getElementById('galerieLegende').value='';
+    document.getElementById('galerieFileName').textContent='';
+    loadGalerie();
+  }catch(e){toast('Erreur serveur','error');}
+}
+
+async function supprimerMedia(id){
+  if(!confirm('Supprimer ce média ?'))return;
+  try{
+    const d=await fetch('api/galerie.php?action=supprimer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    toast(d.success?'Média supprimé.':d.error,d.success?'success':'error');
+    if(d.success)loadGalerie();
+  }catch(e){toast('Erreur serveur','error');}
+}
+
+// ── CARTES MEMBRES ──────────────────────────────
+async function loadCartes(){
+  const statut=document.getElementById('filtreStatutCarte').value;
+  const tb=document.getElementById('tbCartes');
+  tb.innerHTML='<tr class="loading-row"><td colspan="6">Chargement…</td></tr>';
+  try{
+    const url='api/cartes.php?action=liste_admin'+(statut?'&statut='+statut:'');
+    const d=await fetch(url).then(r=>r.json());
+    if(!d.success){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:#ef4444">'+d.error+'</td></tr>';return;}
+    if(!d.cartes.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:rgba(255,255,255,.3)">Aucune carte.</td></tr>';return;}
+    const nbGen=d.cartes.filter(c=>c.statut==='generee').length;
+    document.getElementById('badgeCartes').textContent=nbGen||'';
+    tb.innerHTML=d.cartes.map(c=>`
+      <tr>
+        <td><strong>${c.prenom} ${c.nom}</strong><br><small style="color:rgba(255,255,255,.4)">${c.email}</small></td>
+        <td style="font-family:monospace;font-size:.82rem;color:#e8182e">${c.numero_carte}</td>
+        <td style="font-size:.82rem">${c.filiere||'—'} / ${c.niveau||'—'}</td>
+        <td style="font-size:.78rem;color:rgba(255,255,255,.4)">${formatDate(c.date_creation)}</td>
+        <td><span class="badge ${c.statut}">${c.statut}</span></td>
+        <td><div class="actions-wrap">
+          <button class="btn-sm btn-blue" onclick="voirCarte(${c.id})">👁 Voir / DL</button>
+        </div></td>
+      </tr>`).join('');
+  }catch(e){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:#ef4444;padding:20px">Erreur serveur.</td></tr>';}
+}
+
+async function voirCarte(id){
+  try{
+    const d=await fetch('api/cartes.php?action=telecharger&id='+id).then(r=>r.json());
+    if(!d.success){toast(d.error,'error');return;}
+    currentCarteId=id;
+    currentCarteData=d.carte;
+    // Afficher infos
+    const c=d.carte;
+    document.getElementById('carteInfos').innerHTML=
+      `<b>${c.prenom} ${c.nom}</b> — ${c.filiere||'—'} ${c.niveau||''}<br>N° ${c.numero_carte} | ${c.email}`;
+    document.getElementById('carteStatutSelect').value=c.statut;
+    // Dessiner la carte sur canvas
+    drawCarteCanvas(d.carte.data, d.photo_url);
+    openModal('modalCarte');
+  }catch(e){toast('Erreur serveur','error');}
+}
+
+async function changerStatutCarte(){
+  const statut=document.getElementById('carteStatutSelect').value;
+  try{
+    const d=await fetch('api/cartes.php?action=changer_statut',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentCarteId,statut})}).then(r=>r.json());
+    if(!d.success){toast(d.error,'error');return;}
+    if(d.emailjs_data){
+      const ej=d.emailjs_data;
+      try{await emailjs.send(ej.service_id,ej.template_id,{to_email:ej.to_email,to_name:ej.to_name,subject:ej.subject,message:ej.message});}
+      catch(e){console.warn('EmailJS:',e);}
+    }
+    toast('Statut mis à jour ✅');loadCartes();
+  }catch(e){toast('Erreur serveur','error');}
+}
+
+// ── CANVAS CARTE ────────────────────────────────
+function drawCarteCanvas(data, photoUrl){
+  const canvas=document.getElementById('carteCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // Fond dégradé
+  const grad=ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0,'#0d0d0d');
+  grad.addColorStop(0.45,'#1a0000');
+  grad.addColorStop(1,'#2d0505');
+  roundRectFill(ctx,0,0,W,H,18,grad);
+
+  // Barre rouge top
+  const barGrad=ctx.createLinearGradient(0,0,W,0);
+  ['#8a0a1e','#e8182e','#ff6a6a','#e8182e','#8a0a1e'].forEach((c,i,a)=>barGrad.addColorStop(i/(a.length-1),c));
+  ctx.fillStyle=barGrad;ctx.fillRect(0,0,W,4);
+
+  // Logo et nom org
+  ctx.fillStyle='#fff';ctx.font='bold 14px Arial';ctx.textAlign='left';
+  ctx.fillText('UNSEB',18,32);
+  ctx.fillStyle='#e8182e';ctx.fillText(' Adjarra',18+ctx.measureText('UNSEB').width,32);
+  ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='8px Arial';ctx.letterSpacing='1px';
+  ctx.fillText('UNION NATIONALE DES SCOLAIRES ET ÉTUDIANTS DU BÉNIN',18,46);
+  ctx.letterSpacing='0px';
+
+  // Photo membre
+  const photoX=18,photoY=62,photoW=64,photoH=64;
+  roundRectFill(ctx,photoX,photoY,photoW,photoH,10,'rgba(200,16,46,.2)');
+  if(photoUrl){
+    const img=new Image();
+    img.crossOrigin='anonymous';
+    img.onload=function(){
+      ctx.save();
+      roundRectClip(ctx,photoX,photoY,photoW,photoH,10);
+      ctx.drawImage(img,photoX,photoY,photoW,photoH);
+      ctx.restore();
+    };
+    img.src=photoUrl;
+  } else {
+    ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='32px Arial';ctx.textAlign='center';
+    ctx.fillText('👤',photoX+photoW/2,photoY+photoH/2+10);
+  }
+
+  // Infos texte
+  const tx=photoX+photoW+16;
+  ctx.textAlign='left';
+  ctx.fillStyle='#fff';ctx.font='bold 18px Arial';
+  ctx.fillText((data.prenom||'Prénom')+' '+(data.nom||'NOM').toUpperCase(),tx,84);
+  ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='11px Arial';
+  ctx.fillText(((data.filiere||'Filière')+' · '+(data.niveau||'')).toUpperCase(),tx,102);
+  ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='11px monospace';
+  ctx.fillText('N° : '+(data.numetu||data.id_membre||'—'),tx,120);
+  ctx.fillStyle='#e8182e';ctx.font='bold 11px monospace';
+  ctx.fillText('ID : '+(data.numero||data.id||'UNSEB-2026-0000'),tx,138);
+
+  // Pied
+  ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='10px Arial';ctx.textAlign='left';
+  ctx.fillText('Valide jusqu\'au : ',18,H-14);
+  ctx.fillStyle='rgba(255,255,255,.6)';ctx.font='bold 10px Arial';
+  ctx.fillText(data.validite||'Décembre 2026',18+ctx.measureText('Valide jusqu\'au : ').width+80,H-14);
+
+  // Badge
+  const badge=(data.badge||'Standard').toUpperCase();
+  ctx.font='bold 10px Arial';const bw=ctx.measureText(badge).width+24;
+  roundRectFill(ctx,W-18-bw,H-30,bw,20,10,'#e8182e');
+  ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText(badge,W-18-bw/2,H-16);
+}
+
+function roundRectFill(ctx,x,y,w,h,r,fill){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill();}
+}
+function roundRectClip(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();ctx.clip();
+}
+
+function downloadCarte(){
+  if(!currentCarteData)return;
+  const canvas=document.getElementById('carteCanvas');
+  const link=document.createElement('a');
+  link.download='Carte_'+currentCarteData.numero_carte+'_'+currentCarteData.prenom+'_'+currentCarteData.nom+'.png';
+  link.href=canvas.toDataURL('image/png',1.0);
+  link.click();
+  toast('Carte téléchargée — prête pour impression ✅');
+}
+
+// ── LOGOUT ──────────────────────────────────────
+async function doLogout(){
+  try{await fetch('api/auth.php?action=logout');}catch(e){}
+  localStorage.removeItem('unseb_session');
+  window.location.href='login.html';
+}
+
+// ── HELPERS ─────────────────────────────────────
+function formatDate(s){
+  if(!s)return'—';
+  const d=new Date(s);
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+}
+function formatDateTime(s){
+  if(!s)return'—';
+  const d=new Date(s);
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mon espace — UNSEB Adjarra</title>
+  <link rel="stylesheet" href="unseb.css"/>
+  <style>
+    *{box-sizing:border-box}
+    body{background:#f5f4f2;font-family:'Outfit',sans-serif}
+
+    /* NAV */
+    .dash-nav{background:#0d0d0d;padding:0 5%;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:2px solid rgba(200,16,46,.2)}
+    .dash-nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .dash-nav-logo img{width:34px;height:34px;border-radius:50%;background:#fff;padding:2px;border:2px solid rgba(200,16,46,.4)}
+    .dash-nav-logo span{font-weight:800;color:#fff;font-size:.95rem}.dash-nav-logo em{color:#e8182e;font-style:normal}
+    .dash-nav-right{display:flex;align-items:center;gap:12px}
+    .dash-nav-user{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.8);font-size:.85rem}
+    .dash-nav-avatar{width:32px;height:32px;border-radius:50%;background:#e8182e;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;color:#fff;flex-shrink:0}
+    .dash-nav-btn{padding:7px 14px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:rgba(255,255,255,.7);font-family:'Outfit',sans-serif;text-decoration:none;transition:all .2s}
+    .dash-nav-btn:hover{background:rgba(255,255,255,.14);color:#fff}
+
+    /* LAYOUT */
+    .dash-layout{display:grid;grid-template-columns:220px 1fr;gap:0;min-height:calc(100vh - 60px)}
+
+    /* SIDEBAR */
+    .dash-sidebar{background:#fff;border-right:1px solid rgba(0,0,0,.07);padding:20px 12px;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
+    .ds-link{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:10px;color:var(--texte2);font-size:.87rem;font-weight:500;cursor:pointer;transition:all .2s;margin-bottom:3px;border:none;background:none;width:100%;text-align:left;font-family:'Outfit',sans-serif}
+    .ds-link:hover{background:var(--gris-clair);color:var(--texte)}
+    .ds-link.active{background:rgba(200,16,46,.08);color:var(--rouge-vif);font-weight:700}
+    .ds-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0}
+    .ds-badge{margin-left:auto;background:#e8182e;color:#fff;font-size:.62rem;font-weight:800;padding:2px 6px;border-radius:10px}
+    .ds-section{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,0,0,.3);padding:14px 12px 5px;margin-top:4px}
+
+    /* MAIN */
+    .dash-main{padding:28px;overflow-y:auto}
+    .panel{display:none}.panel.active{display:block}
+
+    /* CARDS */
+    .info-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+    .info-card{background:#fff;border-radius:14px;padding:18px 20px;border:1px solid rgba(0,0,0,.07);box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    .info-card-num{font-size:1.8rem;font-weight:800;font-family:'Playfair Display',serif;color:var(--rouge-vif)}
+    .info-card-lbl{font-size:.78rem;color:var(--texte2);margin-top:4px}
+
+    .white-card{background:#fff;border-radius:14px;border:1px solid rgba(0,0,0,.07);box-shadow:0 2px 8px rgba(0,0,0,.04);overflow:hidden;margin-bottom:20px}
+    .wc-head{padding:16px 20px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+    .wc-head h3{font-size:.95rem;font-weight:700;color:var(--texte)}
+    .wc-body{padding:20px}
+
+    /* STATUS BANNER */
+    .status-banner{padding:14px 20px;border-radius:12px;margin-bottom:20px;font-size:.88rem;font-weight:500;display:flex;align-items:center;gap:10px}
+    .status-banner.pending{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#92400e}
+    .status-banner.ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);color:#15803d}
+
+    /* INSCRIPTIONS */
+    .section-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .section-card{border:1.5px solid var(--border);border-radius:14px;padding:20px;transition:all .2s;background:#fff}
+    .section-card:hover{border-color:var(--rouge-vif);box-shadow:0 4px 16px rgba(200,16,46,.1)}
+    .section-card-icon{font-size:2rem;margin-bottom:10px}
+    .section-card h4{font-size:.95rem;font-weight:700;margin-bottom:6px}
+    .section-card p{font-size:.82rem;color:var(--texte2);margin-bottom:14px;line-height:1.6}
+    .section-card .badge-status{font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:12px}
+    .badge-ok{background:rgba(34,197,94,.1);color:#15803d;border:1px solid rgba(34,197,94,.3)}
+    .badge-wait{background:rgba(245,158,11,.1);color:#92400e;border:1px solid rgba(245,158,11,.3)}
+    .badge-none{background:rgba(0,0,0,.05);color:var(--texte2);border:1px solid var(--border)}
+    .btn-inscrire{width:100%;padding:9px;border-radius:10px;font-size:.83rem;font-weight:700;cursor:pointer;border:1.5px solid var(--rouge-vif);background:transparent;color:var(--rouge-vif);font-family:'Outfit',sans-serif;transition:all .2s}
+    .btn-inscrire:hover{background:var(--rouge-vif);color:#fff}
+    .btn-inscrire:disabled{opacity:.4;cursor:not-allowed}
+
+    /* MODAL INSCRIPTION */
+    .modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#fff;border-radius:18px;padding:32px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;animation:fadeUp .3s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .modal-box h3{font-size:1.05rem;font-weight:700;margin-bottom:20px}
+    .form-group{margin-bottom:16px}
+    .form-group label{display:block;font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--texte2);margin-bottom:7px}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid rgba(0,0,0,.1);border-radius:10px;font-family:'Outfit',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;background:#f9f9f9}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--rouge-vif);box-shadow:0 0 0 3px rgba(200,16,46,.08);background:#fff}
+    .form-group textarea{min-height:80px;resize:vertical}
+    .modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+    .btn-cancel{padding:9px 20px;background:rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.1);border-radius:9px;color:var(--texte2);font-family:'Outfit',sans-serif;font-size:.86rem;cursor:pointer}
+    .btn-submit{padding:9px 22px;background:var(--rouge-vif);color:#fff;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s}
+    .btn-submit:hover{background:var(--rouge)}
+    .btn-submit:disabled{opacity:.5;cursor:not-allowed}
+
+    /* CARTE APERÇU */
+    .carte-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
+    .carte-canvas-wrap{perspective:1200px;cursor:pointer}
+    canvas{border-radius:18px;display:block;max-width:100%;box-shadow:0 16px 50px rgba(0,0,0,.2)}
+    .carte-info{font-size:.82rem;color:var(--texte2);text-align:center;line-height:1.8}
+    .carte-note{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:12px 16px;font-size:.82rem;color:#92400e;text-align:center;max-width:380px}
+
+    /* ÉVÉNEMENTS */
+    .event-list{display:flex;flex-direction:column;gap:12px}
+    .event-item{display:flex;gap:16px;padding:16px;border:1px solid var(--border);border-radius:12px;background:#fff;transition:box-shadow .2s}
+    .event-item:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+    .event-date-block{flex-shrink:0;width:52px;text-align:center;background:var(--rouge-vif);border-radius:10px;padding:8px 4px;color:#fff}
+    .event-day{font-size:1.4rem;font-weight:800;font-family:'Playfair Display',serif;display:block}
+    .event-month{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.8}
+    .event-body{flex:1}
+    .event-body h4{font-size:.93rem;font-weight:700;margin-bottom:4px}
+    .event-body p{font-size:.82rem;color:var(--texte2);line-height:1.6;margin-bottom:6px}
+    .event-meta{font-size:.76rem;color:var(--texte3);display:flex;gap:10px;flex-wrap:wrap}
+    .event-tag{font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--gris2);color:var(--texte2)}
+
+    /* GALERIE */
+    .galerie-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+    .galerie-item{border-radius:10px;overflow:hidden;background:var(--gris2);aspect-ratio:1;position:relative}
+    .galerie-item img,.galerie-item video{width:100%;height:100%;object-fit:cover;display:block}
+    .galerie-item .legende{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);color:#fff;font-size:.7rem;padding:4px 8px;opacity:0;transition:opacity .2s}
+    .galerie-item:hover .legende{opacity:1}
+
+    /* ALERT */
+    .alert{padding:11px 15px;border-radius:10px;font-size:.86rem;margin-bottom:14px;font-weight:500;display:none}
+    .alert.error{background:rgba(200,16,46,.08);border:1.5px solid rgba(200,16,46,.2);color:var(--rouge)}
+    .alert.success{background:rgba(34,197,94,.08);border:1.5px solid rgba(34,197,94,.3);color:#15803d}
+
+    .toast{position:fixed;bottom:20px;right:20px;z-index:9999;background:#0d0d0d;color:#fff;padding:12px 18px;border-radius:10px;border-left:4px solid #22c55e;font-size:.87rem;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.3);animation:slideIn .3s ease;max-width:300px}
+    .toast.error{border-left-color:#ef4444}
+    @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+    @media(max-width:768px){.dash-layout{grid-template-columns:1fr}.dash-sidebar{display:none}}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="dash-nav">
+  <a href="unseb.html" class="dash-nav-logo">
+    <img src="logo.jpeg" alt="Logo"/>
+    <span>UNSEB <em>Adjarra</em></span>
+  </a>
+  <div class="dash-nav-right">
+    <div class="dash-nav-user">
+      <div class="dash-nav-avatar" id="navAvatar">?</div>
+      <span id="navPrenom">…</span>
+    </div>
+    <a href="unseb.html" class="dash-nav-btn">🌐 Site</a>
+    <button class="dash-nav-btn" onclick="doLogout()">Déconnexion</button>
+  </div>
+</nav>
+
+<div class="dash-layout">
+  <!-- SIDEBAR -->
+  <aside class="dash-sidebar">
+    <div class="ds-section">Mon espace</div>
+    <button class="ds-link active" onclick="showPanel('accueil',this)"><span class="ds-icon">🏠</span> Tableau de bord</button>
+    <button class="ds-link" onclick="showPanel('carte',this)"><span class="ds-icon">🪪</span> Ma carte membre</button>
+    <button class="ds-link" onclick="showPanel('inscriptions',this)"><span class="ds-icon">📋</span> Mes inscriptions</button>
+    <div class="ds-section">Campus</div>
+    <button class="ds-link" onclick="showPanel('evenements',this)"><span class="ds-icon">📅</span> Calendrier</button>
+    <button class="ds-link" onclick="showPanel('galerie_m',this)"><span class="ds-icon">🖼️</span> Galerie</button>
+    <button class="ds-link" onclick="window.location.href='chat.html'"><span class="ds-icon">💬</span> Chat <span class="ds-badge" id="sideNonLus" style="display:none">!</span></button>
+    <div class="ds-section">Compte</div>
+    <button class="ds-link" onclick="showPanel('profil_m',this)"><span class="ds-icon">👤</span> Mon profil</button>
+    <button class="ds-link" onclick="window.location.href='etudes.html'"><span class="ds-icon">📚</span> Espace études</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dash-main">
+
+    <!-- ACCUEIL -->
+    <div class="panel active" id="panel-accueil">
+      <div id="statusBanner"></div>
+      <div class="info-cards" id="infoCards">
+        <div class="info-card"><div class="info-card-num" id="icStatut">—</div><div class="info-card-lbl">Statut du compte</div></div>
+        <div class="info-card"><div class="info-card-num" id="icInscriptions">—</div><div class="info-card-lbl">Inscriptions actives</div></div>
+        <div class="info-card"><div class="info-card-num" id="icCarte">—</div><div class="info-card-lbl">Carte membre</div></div>
+      </div>
+      <div class="white-card">
+        <div class="wc-head"><h3>📢 Dernières annonces</h3></div>
+        <div class="wc-body" id="annoncesHome">
+          <p style="color:var(--texte2);font-size:.87rem">Chargement des annonces…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARTE MEMBRE -->
+    <div class="panel" id="panel-carte">
+      <div class="white-card">
+        <div class="wc-head"><h3>🪪 Ma carte membre</h3></div>
+        <div class="wc-body">
+          <div id="carteZone">
+            <p style="color:var(--texte2);font-size:.87rem">Chargement…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSCRIPTIONS -->
+    <div class="panel" id="panel-inscriptions">
+      <div class="white-card">
+        <div class="wc-head"><h3>📋 Mes inscriptions aux sections</h3></div>
+        <div class="wc-body">
+          <p style="font-size:.86rem;color:var(--texte2);margin-bottom:20px">
+            Rejoignez une section de l'UNSEB Adjarra. Seuls les membres dont le compte est validé peuvent s'inscrire.
+            Pour toute question, rendez-vous au <strong>bureau UNSEB</strong>.
+          </p>
+          <div class="section-cards" id="sectionCards">Chargement…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉVÉNEMENTS -->
+    <div class="panel" id="panel-evenements">
+      <div class="white-card">
+        <div class="wc-head"><h3>📅 Calendrier des événements</h3></div>
+        <div class="wc-body">
+          <div class="event-list" id="eventList"><p style="color:var(--texte2)">Chargement…</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GALERIE -->
+    <div class="panel" id="panel-galerie_m">
+      <div class="white-card">
+        <div class="wc-head"><h3>🖼️ Galerie photos & vidéos</h3></div>
+        <div class="wc-body">
+          <div class="galerie-grid" id="membreGalerieGrid"><p style="color:var(--texte2)">Chargement…</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFIL -->
+    <div class="panel" id="panel-profil_m">
+      <div class="white-card">
+        <div class="wc-head"><h3>👤 Mon profil</h3></div>
+        <div class="wc-body">
+          <div id="alertProfil" class="alert"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="form-group"><label>Prénom</label><input type="text" id="pPrenom"/></div>
+            <div class="form-group"><label>Nom</label><input type="text" id="pNom"/></div>
+          </div>
+          <div class="form-group"><label>Email</label><input type="email" id="pEmail" disabled style="opacity:.6"/></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="form-group"><label>Filière</label><input type="text" id="pFiliere"/></div>
+            <div class="form-group"><label>Niveau</label>
+              <select id="pNiveau"><option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label>Téléphone</label><input type="tel" id="pTel"/></div>
+          <div class="form-group"><label>Photo de profil</label><input type="file" id="pPhoto" accept="image/*"/></div>
+          <button class="btn-submit" onclick="saveProfil()">Enregistrer</button>
+          <hr style="margin:24px 0;border:none;border-top:1px solid var(--border)"/>
+          <h4 style="margin-bottom:16px;font-size:.9rem">🔒 Changer le mot de passe</h4>
+          <div id="alertMdp" class="alert"></div>
+          <div class="form-group"><label>Ancien mot de passe</label><input type="password" id="oldMdp"/></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="form-group"><label>Nouveau</label><input type="password" id="newMdp"/></div>
+            <div class="form-group"><label>Confirmer</label><input type="password" id="newMdp2"/></div>
+          </div>
+          <button class="btn-submit" onclick="changeMdp()">Changer le mot de passe</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL INSCRIPTION -->
+<div class="modal-overlay" id="modalInscrip">
+  <div class="modal-box">
+    <h3 id="modalInscripTitle">S'inscrire</h3>
+    <div id="alertInscrip" class="alert"></div>
+    <input type="hidden" id="inscripSection"/>
+    <div class="form-group" id="domaineGroup">
+      <label id="domaineLabel">Spécialité / Domaine</label>
+      <input type="text" id="inscripDomaine" placeholder="Ex: Danse, Chant, Outils numériques…"/>
+    </div>
+    <div class="form-group">
+      <label>Message (optionnel)</label>
+      <textarea id="inscripMessage" placeholder="Motivations, questions…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-submit" id="btnSubmitInscrip" onclick="submitInscription()">Envoyer la demande</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+emailjs.init('9-Ta7lluOweVMqDUa');
+
+let SESSION = null;
+let mesInscriptions = [];
+
+// ── INIT ─────────────────────────────────────
+(async function(){
+  try{
+    const r=await fetch('api/auth.php?action=me');
+    const d=await r.json();
+    if(!d.success){window.location.href='login.html';return;}
+    if(d.user.role==='admin'){window.location.href='admin.html';return;}
+    SESSION=d.user;
+    localStorage.setItem('unseb_session',JSON.stringify(SESSION));
+  }catch(e){
+    const s=localStorage.getItem('unseb_session');
+    if(!s){window.location.href='login.html';return;}
+    try{SESSION=JSON.parse(s);}catch(e2){window.location.href='login.html';return;}
+  }
+  document.getElementById('navPrenom').textContent=SESSION.prenom;
+  document.getElementById('navAvatar').textContent=SESSION.prenom[0].toUpperCase();
+
+  // Status banner
+  const banner=document.getElementById('statusBanner');
+  if(SESSION.statut==='en_attente'){
+    banner.innerHTML='<div class="status-banner pending">⏳ Votre compte est <strong>en attente de validation</strong> par l\'administrateur. Certaines fonctionnalités seront disponibles après validation.</div>';
+  } else {
+    banner.innerHTML='<div class="status-banner ok">✅ Compte validé — Bienvenue, <strong>'+SESSION.prenom+'</strong> ! Vous avez accès à tous les services UNSEB Adjarra.</div>';
+  }
+
+  // Stats rapides
+  document.getElementById('icStatut').textContent=SESSION.statut==='valide'?'✅':'⏳';
+
+  loadAnnonces();
+  loadMesInscriptions();
+  checkNonLus();
+})();
+
+function showPanel(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ds-link').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  const loaders={carte:loadCarte,inscriptions:renderInscriptions,evenements:loadEvenements,galerie_m:loadGalerie,profil_m:loadProfil};
+  if(loaders[id])loaders[id]();
+}
+
+function toast(msg,type='success'){
+  const t=document.createElement('div');
+  t.className='toast'+(type==='error'?' error':'');
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+function showAlert(id,msg,type='error'){const a=document.getElementById(id);a.textContent=msg;a.className='alert '+type;a.style.display='block';}
+function hideAlert(id){document.getElementById(id).style.display='none';}
+function closeModal(){document.getElementById('modalInscrip').classList.remove('open');}
+
+// ── ANNONCES ─────────────────────────────────
+async function loadAnnonces(){
+  try{
+    const d=await fetch('api/evenements.php?action=annonces').then(r=>r.json());
+    const zone=document.getElementById('annoncesHome');
+    if(!d.success||!d.annonces.length){
+      zone.innerHTML='<p style="color:var(--texte2);font-size:.87rem">Aucune annonce pour le moment.</p>';return;
+    }
+    const TYPES={academique:'🎓',culturel:'🎭',AG:'🗣️',formation:'💻',autre:'📌'};
+    zone.innerHTML=d.annonces.map(a=>`
+      <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:flex-start;gap:12px">
+          <span style="font-size:1.4rem">${TYPES[a.type]||'📌'}</span>
+          <div>
+            <strong style="font-size:.92rem">${a.titre}</strong>
+            <p style="font-size:.83rem;color:var(--texte2);margin:4px 0 6px;line-height:1.6">${a.description.substring(0,150)}${a.description.length>150?'…':''}</p>
+            <span style="font-size:.74rem;color:var(--texte3)">${formatDate(a.date_event)}${a.lieu?' · '+a.lieu:''}</span>
+          </div>
+        </div>
+      </div>`).join('');
+  }catch(e){document.getElementById('annoncesHome').innerHTML='<p style="color:var(--rouge);font-size:.87rem">Impossible de charger les annonces (serveur hors ligne ?).</p>';}
+}
+
+// ── INSCRIPTIONS ─────────────────────────────
+async function loadMesInscriptions(){
+  try{
+    const d=await fetch('api/inscriptions.php?action=mes_inscriptions').then(r=>r.json());
+    if(d.success){
+      mesInscriptions=d.inscriptions;
+      document.getElementById('icInscriptions').textContent=d.inscriptions.filter(i=>i.statut==='accepte').length;
+    }
+  }catch(e){}
+}
+
+function renderInscriptions(){
+  if(SESSION.statut!=='valide'){
+    document.getElementById('sectionCards').innerHTML=`<div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--texte2)">⏳ Votre compte doit être validé pour accéder aux inscriptions.</div>`;
+    return;
+  }
+  const sections=[
+    {id:'CECAL',icon:'🎭',title:'CECAL',desc:'Culture, Arts et Loisirs — spectacles, shows, sorties récréatives.',domaineLabel:'Domaine artistique',placeholder:'Danse, Chant, Théâtre…'},
+    {id:'COGHERES',icon:'🥗',title:'COGHERES',desc:'Hygiène, Restauration et Services — gestion cantine, campus.',domaineLabel:'Domaine d\'implication',placeholder:'Cantine, Hygiène, Logement…'},
+    {id:'TD',icon:'📖',title:'TD Gratuits',desc:'Travaux Dirigés gratuits — toutes filières, toute l\'année.',domaineLabel:'Matières souhaitées',placeholder:'Droit, Maths, Anglais…'},
+    {id:'INFORMATIQUE',icon:'💻',title:'Formation Informatique',desc:'Formation informatique appliquée — outils pros, nombreuses opportunités. Bientôt disponible !',domaineLabel:'Domaine d\'intérêt',placeholder:'Bureautique, Web, Graphisme…'},
+  ];
+  const zone=document.getElementById('sectionCards');
+  zone.innerHTML=sections.map(s=>{
+    const insc=mesInscriptions.find(i=>i.section===s.id);
+    const badgeHTML=insc
+      ?(insc.statut==='accepte'?`<span class="badge-status badge-ok">✅ Inscrit(e)</span>`:`<span class="badge-status badge-wait">⏳ En attente</span>`)
+      :`<span class="badge-status badge-none">Non inscrit(e)</span>`;
+    const btnDisabled=!!insc;
+    return `<div class="section-card">
+      <div class="section-card-icon">${s.icon}</div>
+      <h4>${s.title}</h4>
+      <p>${s.desc}</p>
+      ${badgeHTML}
+      <button class="btn-inscrire" ${btnDisabled?'disabled':''} onclick="openInscription('${s.id}','${s.title}','${s.domaineLabel}')">
+        ${insc?'Demande envoyée':'S\'inscrire'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function openInscription(section,title,domaineLabel){
+  document.getElementById('inscripSection').value=section;
+  document.getElementById('modalInscripTitle').textContent='S\'inscrire — '+title;
+  document.getElementById('domaineLabel').textContent=domaineLabel;
+  document.getElementById('inscripDomaine').value='';
+  document.getElementById('inscripMessage').value='';
+  hideAlert('alertInscrip');
+  document.getElementById('modalInscrip').classList.add('open');
+}
+
+async function submitInscription(){
+  const section=document.getElementById('inscripSection').value;
+  const domaine=document.getElementById('inscripDomaine').value.trim();
+  const message=document.getElementById('inscripMessage').value.trim();
+  const btn=document.getElementById('btnSubmitInscrip');
+  btn.disabled=true;btn.textContent='Envoi…';
+  try{
+    const d=await fetch('api/inscriptions.php?action=inscrire',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({section,domaine,message})}).then(r=>r.json());
+    if(!d.success){showAlert('alertInscrip',d.error);btn.disabled=false;btn.textContent='Envoyer la demande';return;}
+    // EmailJS notif admin
+    if(d.emailjs_data){
+      const ej=d.emailjs_data;
+      try{await emailjs.send(ej.service_id,ej.template_id,{to_email:ej.to_email,to_name:ej.to_name,from_name:ej.from_name,from_email:ej.from_email,subject:ej.subject,message:ej.message});}
+      catch(e){console.warn('EmailJS:',e);}
+    }
+    toast('✅ Demande envoyée ! L\'admin vous contactera bientôt.');
+    closeModal();
+    await loadMesInscriptions();
+    renderInscriptions();
+  }catch(e){showAlert('alertInscrip','Erreur serveur.');btn.disabled=false;btn.textContent='Envoyer la demande';}
+}
+
+// ── CARTE ─────────────────────────────────────
+async function loadCarte(){
+  const zone=document.getElementById('carteZone');
+  try{
+    const d=await fetch('api/cartes.php?action=ma_carte').then(r=>r.json());
+    if(!d.success&&d.code==='no_card'){
+      if(SESSION.statut!=='valide'){
+        zone.innerHTML='<p style="color:var(--texte2)">⏳ Votre compte doit être validé pour générer une carte.</p>';return;
+      }
+      zone.innerHTML=`
+        <p style="color:var(--texte2);font-size:.87rem;margin-bottom:16px">Vous n'avez pas encore de carte membre. Générez-en une maintenant !</p>
+        <button class="btn-submit" onclick="genererCarte()">🪪 Générer ma carte membre</button>`;
+      return;
+    }
+    if(!d.success){zone.innerHTML='<p style="color:var(--rouge);font-size:.87rem">'+d.error+'</p>';return;}
+    const data=d.data;
+    document.getElementById('icCarte').textContent='✅';
+    zone.innerHTML=`
+      <div class="carte-wrap">
+        <div class="carte-canvas-wrap">
+          <canvas id="membreCarteCanvas" width="380" height="230"></canvas>
+        </div>
+        <div class="carte-info">
+          <strong>N° ${data.numero||d.carte.numero_carte}</strong> · Statut : <strong>${d.carte.statut}</strong><br>
+          ${data.filiere||''} ${data.niveau||''} · Valide jusqu'au ${data.validite||'Décembre 2026'}
+        </div>
+        <div class="carte-note">
+          🖨️ <strong>Impression réservée à l'administrateur.</strong><br>
+          Votre carte a été transmise au bureau UNSEB. L'administrateur vous la remettra en version physique.
+        </div>
+      </div>`;
+    drawCarte(data, null);
+  }catch(e){zone.innerHTML='<p style="color:var(--rouge)">Erreur serveur.</p>';}
+}
+
+async function genererCarte(){
+  try{
+    const d=await fetch('api/cartes.php?action=generer',{method:'POST'}).then(r=>r.json());
+    if(!d.success){toast(d.error,'error');return;}
+    if(d.emailjs_data){
+      const ej=d.emailjs_data;
+      try{await emailjs.send(ej.service_id,ej.template_id,{to_email:ej.to_email,to_name:ej.to_name,from_name:SESSION.prenom+' '+SESSION.nom,from_email:SESSION.email,subject:ej.subject,message:ej.message});}
+      catch(e){console.warn('EmailJS:',e);}
+    }
+    toast('✅ Carte générée ! L\'administrateur vous la remettra en version physique.');
+    loadCarte();
+  }catch(e){toast('Erreur serveur','error');}
+}
+
+function drawCarte(data, photoUrl){
+  const canvas=document.getElementById('membreCarteCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const grad=ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0,'#0d0d0d');grad.addColorStop(0.45,'#1a0000');grad.addColorStop(1,'#2d0505');
+  rrFill(ctx,0,0,W,H,18,grad);
+  const barG=ctx.createLinearGradient(0,0,W,0);
+  ['#8a0a1e','#e8182e','#ff6a6a','#e8182e','#8a0a1e'].forEach((c,i,a)=>barG.addColorStop(i/(a.length-1),c));
+  ctx.fillStyle=barG;ctx.fillRect(0,0,W,4);
+  ctx.fillStyle='#fff';ctx.font='bold 14px Arial';ctx.textAlign='left';
+  ctx.fillText('UNSEB',18,32);
+  ctx.fillStyle='#e8182e';ctx.fillText(' Adjarra',18+ctx.measureText('UNSEB').width,32);
+  ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='8px Arial';
+  ctx.fillText('UNION NATIONALE DES SCOLAIRES ET ÉTUDIANTS DU BÉNIN',18,46);
+  rrFill(ctx,18,62,64,64,10,'rgba(200,16,46,.2)');
+  ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='28px Arial';ctx.textAlign='center';ctx.fillText('👤',50,100);
+  const tx=98;
+  ctx.textAlign='left';ctx.fillStyle='#fff';ctx.font='bold 16px Arial';
+  ctx.fillText((data.prenom||SESSION.prenom||'Prénom')+' '+(data.nom||SESSION.nom||'NOM').toUpperCase(),tx,84);
+  ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='11px Arial';
+  ctx.fillText(((data.filiere||SESSION.filiere||'Filière')+' · '+(data.niveau||SESSION.niveau||'')).toUpperCase(),tx,102);
+  ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='11px monospace';
+  ctx.fillText('N° : '+(data.id_membre||data.id||SESSION.id||'—'),tx,120);
+  ctx.fillStyle='#e8182e';ctx.font='bold 11px monospace';
+  ctx.fillText('ID : '+(data.numero||'UNSEB-2026-0000'),tx,138);
+  ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='10px Arial';ctx.textAlign='left';
+  ctx.fillText('Valide jusqu\'au : ',18,H-14);
+  ctx.fillStyle='rgba(255,255,255,.6)';ctx.font='bold 10px Arial';
+  ctx.fillText(data.validite||'Décembre 2026',18+130,H-14);
+  const badge='STANDARD';
+  ctx.font='bold 10px Arial';const bw=ctx.measureText(badge).width+24;
+  rrFill(ctx,W-18-bw,H-30,bw,20,10,'#e8182e');
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(badge,W-18-bw/2,H-16);
+}
+function rrFill(ctx,x,y,w,h,r,fill){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill();}
+}
+
+// ── ÉVÉNEMENTS ───────────────────────────────
+async function loadEvenements(){
+  try{
+    const d=await fetch('api/evenements.php?action=liste').then(r=>r.json());
+    const zone=document.getElementById('eventList');
+    if(!d.success||!d.evenements.length){zone.innerHTML='<p style="color:var(--texte2)">Aucun événement programmé.</p>';return;}
+    const TYPES={academique:'🎓 Académique',culturel:'🎭 Culturel',AG:'🗣️ Assemblée',formation:'💻 Formation',autre:'📌 Autre'};
+    zone.innerHTML=d.evenements.map(ev=>{
+      const date=new Date(ev.date_event);
+      return `<div class="event-item">
+        <div class="event-date-block">
+          <span class="event-day">${String(date.getDate()).padStart(2,'0')}</span>
+          <span class="event-month">${date.toLocaleDateString('fr-FR',{month:'short'})}</span>
+        </div>
+        <div class="event-body">
+          <h4>${ev.titre}</h4>
+          <p>${ev.description.substring(0,120)}${ev.description.length>120?'…':''}</p>
+          <div class="event-meta">
+            <span class="event-tag">${TYPES[ev.type]||'📌 Autre'}</span>
+            ${ev.lieu?`<span>📍 ${ev.lieu}</span>`:''}
+            <span>🕐 ${date.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span>
+          </div>
+        </div>
+        ${ev.photo_url?`<img src="${ev.photo_url}" style="width:80px;height:80px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.remove()">`:''}
+      </div>`;
+    }).join('');
+  }catch(e){document.getElementById('eventList').innerHTML='<p style="color:var(--rouge)">Erreur serveur.</p>';}
+}
+
+// ── GALERIE ───────────────────────────────────
+async function loadGalerie(){
+  try{
+    const d=await fetch('api/galerie.php?action=liste').then(r=>r.json());
+    const grid=document.getElementById('membreGalerieGrid');
+    if(!d.success||!d.galerie.length){grid.innerHTML='<p style="color:var(--texte2)">Galerie vide pour le moment.</p>';return;}
+    grid.innerHTML=d.galerie.map(item=>`
+      <div class="galerie-item">
+        ${item.type==='photo'
+          ?`<img src="${item.url}" alt="${item.legende||''}" loading="lazy" onerror="this.src='logo.jpeg'">`
+          :`<video src="${item.url}" preload="metadata" controls></video>`}
+        <div class="legende">${item.legende||''}</div>
+      </div>`).join('');
+  }catch(e){document.getElementById('membreGalerieGrid').innerHTML='<p style="color:var(--rouge)">Erreur serveur.</p>';}
+}
+
+// ── PROFIL ────────────────────────────────────
+async function loadProfil(){
+  try{
+    const d=await fetch('api/membres.php?action=profil').then(r=>r.json());
+    if(!d.success)return;
+    const m=d.membre;
+    document.getElementById('pPrenom').value=m.prenom||'';
+    document.getElementById('pNom').value=m.nom||'';
+    document.getElementById('pEmail').value=m.email||'';
+    document.getElementById('pFiliere').value=m.filiere||'';
+    document.getElementById('pNiveau').value=m.niveau||'L1';
+    document.getElementById('pTel').value=m.telephone||'';
+  }catch(e){}
+}
+
+async function saveProfil(){
+  hideAlert('alertProfil');
+  const prenom=document.getElementById('pPrenom').value.trim();
+  const nom=document.getElementById('pNom').value.trim();
+  const filiere=document.getElementById('pFiliere').value.trim();
+  const niveau=document.getElementById('pNiveau').value;
+  const telephone=document.getElementById('pTel').value.trim();
+  try{
+    const d=await fetch('api/membres.php?action=modifier',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prenom,nom,filiere,niveau,telephone})}).then(r=>r.json());
+    if(!d.success){showAlert('alertProfil',d.error);return;}
+    // Upload photo si sélectionnée
+    const photoFile=document.getElementById('pPhoto').files[0];
+    if(photoFile){
+      const fd=new FormData();fd.append('photo',photoFile);
+      await fetch('api/membres.php?action=upload_photo',{method:'POST',body:fd});
+    }
+    showAlert('alertProfil','✅ Profil mis à jour !','success');
+    SESSION.prenom=prenom;SESSION.nom=nom;
+    localStorage.setItem('unseb_session',JSON.stringify(SESSION));
+    document.getElementById('navPrenom').textContent=prenom;
+    document.getElementById('navAvatar').textContent=prenom[0].toUpperCase();
+  }catch(e){showAlert('alertProfil','Erreur serveur.');}
+}
+
+async function changeMdp(){
+  hideAlert('alertMdp');
+  const ancien=document.getElementById('oldMdp').value;
+  const nouveau=document.getElementById('newMdp').value;
+  const nouveau2=document.getElementById('newMdp2').value;
+  if(nouveau!==nouveau2){showAlert('alertMdp','Les mots de passe ne correspondent pas.');return;}
+  if(nouveau.length<8){showAlert('alertMdp','Minimum 8 caractères.');return;}
+  try{
+    const d=await fetch('api/auth.php?action=change_password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ancien_mdp:ancien,nouveau_mdp:nouveau})}).then(r=>r.json());
+    if(!d.success){showAlert('alertMdp',d.error);return;}
+    showAlert('alertMdp','✅ Mot de passe modifié avec succès !','success');
+    document.getElementById('oldMdp').value='';document.getElementById('newMdp').value='';document.getElementById('newMdp2').value='';
+  }catch(e){showAlert('alertMdp','Erreur serveur.');}
+}
+
+// ── CHAT NON LUS ─────────────────────────────
+async function checkNonLus(){
+  try{
+    const d=await fetch('api/chat.php?action=non_lus').then(r=>r.json());
+    if(d.success&&d.non_lus>0){
+      const b=document.getElementById('sideNonLus');
+      b.style.display='inline-block';b.textContent=d.non_lus>9?'9+':d.non_lus;
+    }
+  }catch(e){}
+}
+
+// ── LOGOUT ───────────────────────────────────
+async function doLogout(){
+  try{await fetch('api/auth.php?action=logout');}catch(e){}
+  localStorage.removeItem('unseb_session');
+  window.location.href='login.html';
+}
+
+function formatDate(s){
+  if(!s)return'—';
+  return new Date(s).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+}
+</script>
+</body>
+</html>

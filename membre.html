@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Carte de Membre | UNSEB Adjarra</title>
+  <link rel="stylesheet" href="unseb.css"/>
+  <style>
+    .stepper { display:flex; align-items:flex-start; justify-content:center; gap:0; margin-bottom:52px }
+    .step-wrap { display:flex; flex-direction:column; align-items:center; gap:6px }
+    .step-dot { width:38px; height:38px; border-radius:50%; border:2px solid #ddd; display:flex; align-items:center; justify-content:center; font-size:.82rem; font-weight:700; color:#bbb; background:#fff; transition:all .4s ease; position:relative; z-index:1; flex-shrink:0 }
+    .step-dot.active { border-color:var(--rouge-vif); background:var(--rouge-vif); color:#fff; box-shadow:0 0 0 4px rgba(200,16,46,.15) }
+    .step-dot.done { border-color:var(--rouge-vif); background:var(--rouge-vif); color:#fff }
+    .step-dot.done::after { content:'✓'; font-size:.85rem }
+    .step-dot.done .snum { display:none }
+    .step-label { font-size:.72rem; font-weight:600; color:#bbb; white-space:nowrap; transition:color .3s }
+    .step-label.active { color:var(--rouge-vif) }
+    .step-label.done { color:var(--rouge) }
+    .step-bar { width:72px; height:2px; background:#e8e8e8; flex-shrink:0; margin-top:19px; transition:background .4s }
+    .step-bar.done { background:var(--rouge-vif) }
+    .panel { display:none }
+    .panel.active { display:block; animation:slide-in .38s cubic-bezier(.22,1,.36,1) }
+    @keyframes slide-in { from{opacity:0;transform:translateX(22px)} to{opacity:1;transform:translateX(0)} }
+    .photo-drop { border:2.5px dashed rgba(200,16,46,.28); border-radius:var(--rl); padding:44px 20px; text-align:center; cursor:pointer; position:relative; transition:border-color var(--t),background var(--t); background:var(--gris-clair) }
+    .photo-drop:hover { border-color:var(--rouge-vif); background:rgba(200,16,46,.04) }
+    .photo-drop input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100% }
+    #photoThumb { width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid var(--rouge-vif); display:none; margin:0 auto 14px; box-shadow:0 8px 24px rgba(200,16,46,.22) }
+    #photoThumb.show { display:block }
+    .photo-icon { font-size:2.8rem; margin-bottom:10px }
+    .photo-hint { font-size:.82rem; color:var(--texte3); margin-top:6px }
+    .pay-header { background:linear-gradient(135deg,#0d0d0d,#1c0000 60%,#2d0505); border-radius:var(--rl); padding:28px 32px; color:#fff; position:relative; overflow:hidden; margin-bottom:24px }
+    .pay-header::before { content:''; position:absolute; top:-50px; right:-50px; width:180px; height:180px; border-radius:50%; background:rgba(200,16,46,.12); pointer-events:none }
+    .pay-amount { font-family:'Playfair Display',serif; font-size:2.6rem; font-weight:800; color:var(--rouge-vif) }
+    .pay-desc { font-size:.85rem; color:rgba(255,255,255,.5); margin-top:4px }
+    .pay-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0 }
+    .pay-opt { border:1.5px solid var(--border); border-radius:var(--r); padding:14px 16px; cursor:pointer; transition:border-color var(--t),background var(--t); display:flex; align-items:center; gap:10px; background:#fff; user-select:none }
+    .pay-opt:hover,.pay-opt.sel { border-color:var(--rouge-vif); background:var(--rouge-bg) }
+    .pay-opt-icon { font-size:1.5rem; flex-shrink:0 }
+    .pay-opt-name { font-weight:700; font-size:.9rem }
+    .pay-opt-sub { font-size:.74rem; color:var(--texte2) }
+    .code-field { display:none }
+    .code-field.on { display:block }
+    .recap { background:var(--gris-clair); border-radius:var(--r); padding:20px 24px; margin-bottom:24px }
+    .recap-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(0,0,0,.06); font-size:.9rem }
+    .recap-row:last-child { border:none; font-weight:700; font-size:1rem }
+    .recap-row span:last-child { color:var(--rouge-vif); font-weight:600 }
+
+    /* Carte 3D */
+    .card-scene { perspective:1200px; width:380px; max-width:100%; margin:0 auto 12px; cursor:pointer }
+    .card-3d { width:380px; max-width:100%; height:230px; position:relative; transform-style:preserve-3d; transition:transform .75s cubic-bezier(.4,0,.2,1) }
+    .card-3d.flipped { transform:rotateY(180deg) }
+    .card-face { position:absolute; inset:0; border-radius:18px; backface-visibility:hidden; -webkit-backface-visibility:hidden; overflow:hidden }
+    .card-front { background:linear-gradient(135deg,#0d0d0d 0%,#1a0000 45%,#2d0505 100%); padding:20px 24px; display:flex; flex-direction:column; justify-content:space-between }
+    .card-front::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,#8a0a1e,#e8182e,#ff6a6a,#e8182e,#8a0a1e) }
+    .card-front .deco1 { position:absolute; top:-30px; right:-30px; width:130px; height:130px; border-radius:50%; background:rgba(200,16,46,.08) }
+    .card-front .deco2 { position:absolute; bottom:-20px; left:-20px; width:90px; height:90px; border-radius:50%; background:rgba(200,16,46,.06) }
+    .card-top-row { display:flex; align-items:center; justify-content:space-between; position:relative; z-index:1 }
+    .card-org { color:#fff }
+    .card-org-name { font-weight:800; font-size:.9rem; letter-spacing:.04em }
+    .card-org-name span { color:var(--rouge-vif) }
+    .card-org-sub { font-size:.54rem; color:rgba(255,255,255,.35); letter-spacing:.08em; text-transform:uppercase; margin-top:2px }
+    .card-logo-circle { width:44px; height:44px; border-radius:50%; overflow:hidden; border:2px solid rgba(255,255,255,.2); flex-shrink:0; background:#fff }
+    .card-logo-circle img { width:100%; height:100%; object-fit:contain; padding:3px }
+    .card-mid { display:flex; align-items:flex-end; gap:14px; position:relative; z-index:1 }
+    .card-photo-wrap { width:64px; height:64px; border-radius:10px; flex-shrink:0; border:2.5px solid var(--rouge-vif); overflow:hidden; background:rgba(200,16,46,.15); display:flex; align-items:center; justify-content:center }
+    .card-photo-wrap img { width:100%; height:100%; object-fit:cover }
+    .card-photo-wrap .avatar { font-size:1.8rem }
+    .card-name { color:#fff; font-weight:700; font-size:.96rem; line-height:1.25 }
+    .card-role { color:rgba(255,255,255,.45); font-size:.6rem; letter-spacing:.07em; text-transform:uppercase; margin-top:3px }
+    .card-num { color:rgba(255,255,255,.6); font-size:.59rem; font-family:monospace; letter-spacing:.05em; margin-top:2px }
+    .card-id { color:var(--rouge-vif); font-size:.6rem; font-family:monospace; letter-spacing:.07em; margin-top:3px }
+    .card-bot { display:flex; align-items:center; justify-content:space-between; position:relative; z-index:1 }
+    .card-valid { font-size:.58rem; color:rgba(255,255,255,.35); letter-spacing:.05em }
+    .card-valid strong { color:rgba(255,255,255,.6) }
+    .card-badge { background:var(--rouge-vif); color:#fff; font-size:.57rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:4px 12px; border-radius:20px }
+    .card-back { background:linear-gradient(135deg,#1a0000,#0d0d0d); transform:rotateY(180deg); padding:0; display:flex; flex-direction:column }
+    .card-magstrip { height:44px; background:#111; margin-top:24px; position:relative }
+    .card-magstrip::after { content:''; position:absolute; inset:4px 0; background:linear-gradient(90deg,#222,#333,#222); border-radius:1px }
+    .card-back-content { padding:14px 20px; flex:1; display:flex; flex-direction:column; justify-content:space-between }
+    .card-sig { background:rgba(255,255,255,.08); border-radius:4px; padding:8px 12px; display:flex; align-items:center; gap:14px }
+    .card-qr { width:52px; height:52px; flex-shrink:0 }
+    .card-back-info { font-size:.64rem; color:rgba(255,255,255,.55); line-height:1.8 }
+    .card-back-info strong { color:rgba(255,255,255,.85) }
+    .card-back-footer { font-size:.53rem; color:rgba(255,255,255,.2); text-align:center; line-height:1.6 }
+    .success-icon { width:68px; height:68px; border-radius:50%; background:rgba(34,197,94,.08); border:2px solid #22c55e; display:flex; align-items:center; justify-content:center; font-size:2rem; margin:0 auto 16px }
+    .card-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:24px }
+    .flip-hint { text-align:center; font-size:.76rem; color:var(--texte3); margin-bottom:28px }
+    .pay-note { background:var(--rouge-bg); border-radius:var(--r); border-left:3px solid var(--rouge-vif); padding:16px 18px; font-size:.87rem; margin-top:28px; line-height:1.7 }
+    @media(max-width:480px){ .pay-grid { grid-template-columns:1fr } .card-scene,.card-3d { width:100% } .card-3d { height:auto;min-height:210px } .step-bar { width:36px } }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="logo-wrap">
+    <img src="logo.jpeg" alt="Logo UNSEB"/>
+    <div class="logo-text">UNSEB <span>Adjarra</span></div>
+  </div>
+  <nav class="nav-links" id="navLinks">
+    <a href="unseb.html" data-page="accueil">Accueil</a>
+    <a href="apropos.html" data-page="apropos">À propos</a>
+    <a href="activites.html" data-page="activites">Activités</a>
+    <a href="etudes.html" data-page="etudes">📚 Études</a>
+    <a href="calendrier.html" data-page="calendrier">Calendrier</a>
+    <a href="galerie.html" data-page="galerie">Galerie</a>
+    <a href="ressources.html" data-page="ressources">Ressources</a>
+    <a href="sondages.html" data-page="sondages">Sondages</a>
+    <a href="chat.html" data-page="chat" id="navChat">💬 Chat</a>
+    <a href="contact.html" data-page="contact">Contact</a>
+    <a href="membre.html" class="nav-cta" data-page="membre">🪪 Carte membre</a>
+  </nav>
+  <button class="nav-toggle" id="navToggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="breadcrumb">Accueil → <span>Carte de Membre</span></div>
+  <h1>Obtenir votre carte de membre</h1>
+  <p>Complétez les 4 étapes ci-dessous pour recevoir votre carte membre électronique officielle UNSEB Adjarra.</p>
+</section>
+
+<section class="section-wrap">
+  <div style="max-width:660px;margin:0 auto">
+
+    <!-- STEPPER -->
+    <div class="stepper">
+      <div class="step-wrap">
+        <div class="step-dot active" id="dot1"><span class="snum">1</span></div>
+        <div class="step-label active" id="lbl1">Infos</div>
+      </div>
+      <div class="step-bar" id="bar1"></div>
+      <div class="step-wrap">
+        <div class="step-dot" id="dot2"><span class="snum">2</span></div>
+        <div class="step-label" id="lbl2">Photo</div>
+      </div>
+      <div class="step-bar" id="bar2"></div>
+      <div class="step-wrap">
+        <div class="step-dot" id="dot3"><span class="snum">3</span></div>
+        <div class="step-label" id="lbl3">Paiement</div>
+      </div>
+      <div class="step-bar" id="bar3"></div>
+      <div class="step-wrap">
+        <div class="step-dot" id="dot4"><span class="snum">4</span></div>
+        <div class="step-label" id="lbl4">Votre carte</div>
+      </div>
+    </div>
+
+    <!-- PANEL 1 : INFORMATIONS -->
+    <div class="panel active" id="panel1">
+      <div class="form-card">
+        <h3>Vos informations</h3>
+        <p class="form-sub">Ces données apparaîtront sur votre carte officielle. Assurez-vous qu'elles sont exactes.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom <span style="color:var(--rouge-vif)">*</span></label>
+            <input type="text" id="m-prenom" placeholder="Votre prénom"/>
+          </div>
+          <div class="form-group">
+            <label>Nom <span style="color:var(--rouge-vif)">*</span></label>
+            <input type="text" id="m-nom" placeholder="Votre NOM"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Numéro étudiant <span style="color:var(--rouge-vif)">*</span></label>
+          <input type="text" id="m-numetu" placeholder="ex: UA2024-0001 ou numéro de matricule"/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Filière <span style="color:var(--rouge-vif)">*</span></label>
+            <input type="text" id="m-filiere" placeholder="ex: Droit, Gestion, Science..."/>
+          </div>
+          <div class="form-group">
+            <label>Niveau <span style="color:var(--rouge-vif)">*</span></label>
+            <select id="m-niveau">
+              <option value="">-- Niveau --</option>
+              <option>L1</option><option>L2</option><option>L3</option>
+              <option>M1</option><option>M2</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Type de carte <span style="color:var(--rouge-vif)">*</span></label>
+          <select id="m-type">
+            <option value="">-- Choisir le type --</option>
+            <option value="Standard|1000">Membre Standard — 1 000 FCFA</option>
+            <option value="CECAL|1500">Membre CECAL (Culture et Arts) — 1 500 FCFA</option>
+            <option value="COGHERES|1500">Membre COGHERES (Hygiène) — 1 500 FCFA</option>
+            <option value="Premium|2500">Membre Premium (Tous droits) — 2 500 FCFA</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Téléphone <span style="color:var(--rouge-vif)">*</span></label>
+          <input type="tel" id="m-tel" placeholder="+229 97 00 00 00"/>
+        </div>
+        <div class="form-error" id="err1" style="display:none">Veuillez remplir tous les champs obligatoires.</div>
+        <button class="btn btn-rouge" style="width:100%;justify-content:center" onclick="step1()">
+          Continuer → Ajouter ma photo
+        </button>
+      </div>
+    </div>
+
+    <!-- PANEL 2 : PHOTO -->
+    <div class="panel" id="panel2">
+      <div class="form-card">
+        <h3>Votre photo</h3>
+        <p class="form-sub">Photo de face, claire. Elle sera intégrée sur votre carte membre personnalisée.</p>
+        <div class="photo-drop" id="photoDrop">
+          <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(this)"/>
+          <img id="photoThumb" src="" alt="Votre photo"/>
+          <div class="photo-icon" id="photoIcon">📷</div>
+          <div style="font-weight:700;font-size:.95rem" id="photoTxt">Cliquez pour choisir votre photo</div>
+          <div class="photo-hint">JPG ou PNG · Max 5 Mo · Photo de face recommandée</div>
+        </div>
+        <p style="text-align:center;font-size:.82rem;color:var(--texte3);margin-top:14px;font-style:italic">
+          Vous pouvez continuer sans photo — un avatar sera utilisé à la place.
+        </p>
+        <div style="display:flex;gap:12px;margin-top:24px">
+          <button class="btn btn-light" style="flex:1;justify-content:center;border:1.5px solid #ddd" onclick="goPanel(1)">← Retour</button>
+          <button class="btn btn-rouge" style="flex:2;justify-content:center" onclick="step2()">Continuer → Paiement</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 3 : PAIEMENT -->
+    <div class="panel" id="panel3">
+      <div class="form-card">
+        <div class="pay-header">
+          <div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:6px">Montant à régler</div>
+          <div class="pay-amount" id="dispAmt">1 000 FCFA</div>
+          <div class="pay-desc" id="dispType">Carte Membre Standard — UNSEB Adjarra</div>
+        </div>
+        <div class="recap">
+          <div class="recap-row"><span>Nom complet</span><span id="rcNom">—</span></div>
+          <div class="recap-row"><span>N° étudiant</span><span id="rcNumEtu">—</span></div>
+          <div class="recap-row"><span>Filière / Niveau</span><span id="rcFil">—</span></div>
+          <div class="recap-row"><span>Type de carte</span><span id="rcType">—</span></div>
+          <div class="recap-row"><span>Total à payer</span><span id="rcAmt">—</span></div>
+        </div>
+        <p style="font-weight:700;margin-bottom:14px;font-size:.95rem">Mode de paiement :</p>
+        <div class="pay-grid">
+          <div class="pay-opt" onclick="choosePay(this,'mtn')"><div class="pay-opt-icon">📱</div><div><div class="pay-opt-name">MTN MoMo</div><div class="pay-opt-sub">Mobile Money MTN</div></div></div>
+          <div class="pay-opt" onclick="choosePay(this,'moov')"><div class="pay-opt-icon">📲</div><div><div class="pay-opt-name">Moov Money</div><div class="pay-opt-sub">Moov Africa Flooz</div></div></div>
+          <div class="pay-opt" onclick="choosePay(this,'cash')"><div class="pay-opt-icon">💵</div><div><div class="pay-opt-name">Espèces</div><div class="pay-opt-sub">Remettre au bureau UNSEB</div></div></div>
+          <div class="pay-opt" onclick="choosePay(this,'card')"><div class="pay-opt-icon">💳</div><div><div class="pay-opt-name">Carte bancaire</div><div class="pay-opt-sub">Visa / Mastercard</div></div></div>
+        </div>
+        <div class="code-field form-group" id="codeField">
+          <label id="codeLbl">Code de transaction</label>
+          <input type="text" id="payCode" placeholder="ex: TXN-2026-XXXXXX" style="font-family:monospace;letter-spacing:.08em"/>
+        </div>
+        <div class="form-error" id="err3" style="display:none">Veuillez sélectionner un mode de paiement et entrer le code de transaction.</div>
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <button class="btn btn-light" style="flex:1;justify-content:center;border:1.5px solid #ddd" onclick="goPanel(2)">← Retour</button>
+          <button class="btn btn-rouge" style="flex:2;justify-content:center" id="payBtn" onclick="pay()">✓ Confirmer le paiement</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 4 : CARTE GENEREE -->
+    <div class="panel" id="panel4">
+      <div style="text-align:center;margin-bottom:36px">
+        <div class="success-icon">✅</div>
+        <h3 style="font-size:1.35rem;margin-bottom:8px">Félicitations, vous êtes membre !</h3>
+        <p style="color:var(--texte2);font-size:.93rem;max-width:460px;margin:0 auto">
+          Votre carte membre officielle UNSEB Adjarra est prête. Cliquez dessus pour voir le verso.
+        </p>
+      </div>
+
+      <!-- CARTE 3D -->
+      <div class="card-scene">
+        <div class="card-3d" id="theCard" onclick="this.classList.toggle('flipped')">
+
+          <!-- FACE AVANT -->
+          <div class="card-face card-front" id="cardFront">
+            <div class="deco1"></div>
+            <div class="deco2"></div>
+            <div class="card-top-row">
+              <div class="card-org">
+                <div class="card-org-name">UNSEB <span>Adjarra</span></div>
+                <div class="card-org-sub">Union Nat. Scolaires et Etudiants du Bénin</div>
+              </div>
+              <div class="card-logo-circle">
+                <img src="logo.jpeg" alt="UNSEB"/>
+              </div>
+            </div>
+            <div class="card-mid">
+              <div class="card-photo-wrap" id="cPhotoWrap">
+                <span class="avatar" id="cAvatar">👤</span>
+              </div>
+              <div>
+                <div class="card-name" id="cName">Prénom NOM</div>
+                <div class="card-role" id="cRole">Filière · Niveau</div>
+                <div class="card-num" id="cNumEtu">N° : —</div>
+                <div class="card-id" id="cId">ID: UNSEB-2026-0000</div>
+              </div>
+            </div>
+            <div class="card-bot">
+              <div class="card-valid">Valide jusqu'au : <strong id="cValidity">Déc. 2026</strong></div>
+              <div class="card-badge" id="cBadge">Standard</div>
+            </div>
+          </div>
+
+          <!-- FACE ARRIERE -->
+          <div class="card-face card-back">
+            <div class="card-magstrip"></div>
+            <div class="card-back-content">
+              <div class="card-sig">
+                <svg class="card-qr" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="48" height="48" fill="white"/>
+                  <rect x="2" y="2" width="18" height="18" fill="none" stroke="#000" stroke-width="2.5"/>
+                  <rect x="6" y="6" width="10" height="10" fill="#000"/>
+                  <rect x="28" y="2" width="18" height="18" fill="none" stroke="#000" stroke-width="2.5"/>
+                  <rect x="32" y="6" width="10" height="10" fill="#000"/>
+                  <rect x="2" y="28" width="18" height="18" fill="none" stroke="#000" stroke-width="2.5"/>
+                  <rect x="6" y="32" width="10" height="10" fill="#000"/>
+                  <rect x="28" y="28" width="5" height="5" fill="#000"/>
+                  <rect x="35" y="28" width="5" height="5" fill="#000"/>
+                  <rect x="41" y="34" width="5" height="5" fill="#000"/>
+                  <rect x="28" y="35" width="5" height="5" fill="#000"/>
+                  <rect x="35" y="41" width="11" height="5" fill="#000"/>
+                </svg>
+                <div class="card-back-info">
+                  <div><strong id="bName">Prénom NOM</strong></div>
+                  <div id="bRole">Filière | Niveau</div>
+                  <div id="bNumEtu" style="font-family:monospace;font-size:.59rem;color:rgba(255,255,255,.7)">N° Etudiant: —</div>
+                  <div id="bId" style="font-family:monospace;font-size:.59rem">UNSEB-2026-0000</div>
+                  <div>Tel : 01 54 32 53 24</div>
+                </div>
+              </div>
+              <div class="card-back-footer">
+                Cette carte est la propriété de l'UNSEB Adjarra. En cas de perte, contacter le bureau.<br/>
+                © 2026 UNSEB — Centre Universitaire d'Adjarra, Bénin
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="flip-hint">↻ Cliquez sur la carte pour voir le verso</p>
+
+      <div class="card-actions">
+        <button class="btn btn-rouge" id="dlBtn" onclick="downloadCard()">⬇ Télécharger (PNG)</button>
+        <a id="waShareBtn" href="#" target="_blank" class="btn" style="background:#25d366;color:#fff">
+          💬 Partager sur WhatsApp
+        </a>
+      </div>
+
+      <div class="pay-note">
+        <strong>Prochaine étape :</strong> Présentez cette carte (ou son aperçu sur votre téléphone) au bureau de l'UNSEB pour validation physique.
+        Assemblée générale : <strong>chaque jeudi à 13h00</strong>.
+      </div>
+
+      <div style="text-align:center;margin-top:28px">
+        <a href="unseb.html" class="btn btn-dark">← Retour à l'accueil</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo-wrap">
+        <img src="logo.jpeg" alt="Logo UNSEB"/>
+        <div class="footer-logo-text">UNSEB <span>Adjarra</span></div>
+      </div>
+      <p>Union Nationale des Scolaires et Etudiants du Bénin — Sous-section d'Adjarra. Défendre, représenter, agir pour chaque étudiant.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="unseb.html">Accueil</a></li>
+        <li><a href="apropos.html">A propos</a></li>
+        <li><a href="activites.html">Activités</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="membre.html">🪪 Carte membre</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Nous contacter</h4>
+      <ul>
+        <li><a href="tel:0154325324">📞 01 54 32 53 24</a></li>
+        <li><a href="tel:0145884821">📱 01 45 88 48 21</a></li>
+        <li><a href="https://wa.me/2290154325324" target="_blank">💬 WhatsApp</a></li>
+        <li><a href="mailto:unsebadjarra@gmail.com">✉ unsebadjarra@gmail.com</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 UNSEB Adjarra — Tous droits réservés</span>
+    <span>Centre Universitaire d'Adjarra, Bénin</span>
+  </div>
+</footer>
+
+
+<script>
+var S = { prenom:'', nom:'', numetu:'', filiere:'', niveau:'', badge:'', amount:0, tel:'', photo:'', id:'' };
+var payMode = '';
+
+document.getElementById('navToggle').addEventListener('click', function(){
+  document.getElementById('navLinks').classList.toggle('open');
+});
+document.querySelectorAll('.fade-up').forEach(function(el){
+  new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:.1}).observe(el);
+});
+
+function goPanel(n) {
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('panel'+n).classList.add('active');
+  updateStepper(n);
+  var st = document.querySelector('.stepper');
+  if(st) window.scrollTo({ top: st.offsetTop - 90, behavior: 'smooth' });
+}
+
+function updateStepper(active) {
+  for(var i=1; i<=4; i++){
+    var dot = document.getElementById('dot'+i);
+    var lbl = document.getElementById('lbl'+i);
+    dot.classList.remove('active','done');
+    lbl.classList.remove('active','done');
+    if(i < active){ dot.classList.add('done'); lbl.classList.add('done'); }
+    if(i === active){ dot.classList.add('active'); lbl.classList.add('active'); }
+    if(i < 4){
+      var bar = document.getElementById('bar'+i);
+      if(i < active) bar.classList.add('done'); else bar.classList.remove('done');
+    }
+  }
+}
+
+function step1() {
+  var prenom  = document.getElementById('m-prenom').value.trim();
+  var nom     = document.getElementById('m-nom').value.trim();
+  var numetu  = document.getElementById('m-numetu').value.trim();
+  var filiere = document.getElementById('m-filiere').value.trim();
+  var niveau  = document.getElementById('m-niveau').value;
+  var type    = document.getElementById('m-type').value;
+  var tel     = document.getElementById('m-tel').value.trim();
+  var err     = document.getElementById('err1');
+  if(!prenom||!nom||!numetu||!filiere||!niveau||!type||!tel){ err.style.display='block'; return; }
+  err.style.display='none';
+  var parts = type.split('|');
+  S.prenom=prenom; S.nom=nom; S.numetu=numetu; S.filiere=filiere; S.niveau=niveau;
+  S.badge=parts[0]; S.amount=parseInt(parts[1]); S.tel=tel;
+  goPanel(2);
+}
+
+function loadPhoto(input) {
+  var file = input.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    S.photo = ev.target.result;
+    var thumb = document.getElementById('photoThumb');
+    thumb.src = ev.target.result;
+    thumb.classList.add('show');
+    document.getElementById('photoIcon').style.display='none';
+    document.getElementById('photoTxt').textContent='✓ Photo sélectionnée';
+  };
+  reader.readAsDataURL(file);
+}
+
+function step2() {
+  var fullName = S.prenom + ' ' + S.nom.toUpperCase();
+  document.getElementById('rcNom').textContent    = fullName;
+  document.getElementById('rcNumEtu').textContent = S.numetu;
+  document.getElementById('rcFil').textContent    = S.filiere + ' / ' + S.niveau;
+  document.getElementById('rcType').textContent   = 'Membre ' + S.badge;
+  document.getElementById('rcAmt').textContent    = S.amount.toLocaleString('fr-FR') + ' FCFA';
+  document.getElementById('dispAmt').textContent  = S.amount.toLocaleString('fr-FR') + ' FCFA';
+  document.getElementById('dispType').textContent = 'Membre ' + S.badge + ' — UNSEB Adjarra';
+  goPanel(3);
+}
+
+function choosePay(el, mode) {
+  document.querySelectorAll('.pay-opt').forEach(function(o){ o.classList.remove('sel'); });
+  el.classList.add('sel');
+  payMode = mode;
+  var codeField = document.getElementById('codeField');
+  var codeLbl   = document.getElementById('codeLbl');
+  if(mode === 'cash'){
+    codeField.classList.remove('on');
+  } else {
+    codeField.classList.add('on');
+    document.getElementById('payCode').value = '';
+    var labels = { mtn:'Code de transaction MTN MoMo *', moov:'Code de transaction Moov Money *', card:'Référence de transaction bancaire *' };
+    codeLbl.textContent = labels[mode] || 'Code de confirmation *';
+  }
+}
+
+function pay() {
+  var err = document.getElementById('err3');
+  if(!payMode){ err.style.display='block'; err.textContent='Veuillez choisir un mode de paiement.'; return; }
+  if(payMode !== 'cash' && !document.getElementById('payCode').value.trim()){
+    err.style.display='block'; err.textContent='Veuillez entrer votre code de transaction.'; return;
+  }
+  err.style.display='none';
+  var btn = document.getElementById('payBtn');
+  btn.textContent='⏳ Vérification en cours…';
+  btn.disabled=true;
+  setTimeout(function(){
+    S.id = 'UNSEB-2026-' + (Math.floor(Math.random()*9000)+1000);
+    // Incrémenter le compteur de membres
+    var n = parseInt(localStorage.getItem('unseb_membres')||'200') + 1;
+    localStorage.setItem('unseb_membres', n);
+    buildCard();
+    goPanel(4);
+    btn.textContent='✓ Confirmer le paiement';
+    btn.disabled=false;
+  }, 1800);
+}
+
+function buildCard() {
+  var fullName = S.prenom + ' ' + S.nom.toUpperCase();
+  document.getElementById('cName').textContent   = fullName;
+  document.getElementById('cRole').textContent   = S.filiere + ' · ' + S.niveau;
+  document.getElementById('cNumEtu').textContent = 'N° : ' + S.numetu;
+  document.getElementById('cId').textContent     = 'ID: ' + S.id;
+  document.getElementById('cBadge').textContent  = S.badge;
+  document.getElementById('cValidity').textContent = 'Déc. 2026';
+  document.getElementById('bName').textContent   = fullName;
+  document.getElementById('bRole').textContent   = S.filiere + ' | ' + S.niveau;
+  document.getElementById('bNumEtu').textContent = 'N° Etudiant: ' + S.numetu;
+  document.getElementById('bId').textContent     = S.id;
+  if(S.photo){
+    var wrap = document.getElementById('cPhotoWrap');
+    var avatar = document.getElementById('cAvatar');
+    if(avatar) avatar.remove();
+    var img = document.createElement('img');
+    img.src = S.photo;
+    img.style.cssText='width:100%;height:100%;object-fit:cover';
+    wrap.appendChild(img);
+  }
+  var msg = encodeURIComponent('Bonjour ! Je viens d\'obtenir ma carte membre UNSEB Adjarra.\nNom : *'+fullName+'*\nN° étudiant : '+S.numetu+'\nType : Membre '+S.badge+'\nID : '+S.id);
+  document.getElementById('waShareBtn').href = 'https://wa.me/2290154325324?text='+msg;
+}
+/**
+ * ╔══════════════════════════════════════════════════════════════╗
+ *  UNSEB Adjarra — Téléchargement Carte Membre (Recto + Verso)
+ *  Dessin direct sur Canvas — aucune dépendance externe requise
+ *  Remplacez TOUTE votre fonction downloadCard() par celle-ci
+ * ╚══════════════════════════════════════════════════════════════╝
+ *
+ *  INSTRUCTIONS :
+ *  1. Supprimez votre ancienne fonction downloadCard()
+ *  2. Collez ce bloc complet à la place dans votre <script>
+ *  3. Supprimez la balise html2canvas si vous n'en avez plus besoin
+ */
+
+function downloadCard() {
+  var btn = document.getElementById('dlBtn');
+  btn.textContent = '⏳ Génération…';
+  btn.disabled = true;
+
+  // Dimensions d'une carte (format carte de crédit : 85.6 x 54 mm → 856 x 540 px à 100dpi×10)
+  var CW = 856;  // largeur d'une face
+  var CH = 540;  // hauteur d'une face
+  var GAP = 40;  // espace entre recto et verso
+  var PAD = 60;  // marge autour
+  var LABEL_H = 50; // hauteur pour les labels RECTO/VERSO
+
+  var totalW = CW * 2 + GAP + PAD * 2;
+  var totalH = CH + PAD * 2 + LABEL_H + 40; // +40 pour le texte bas
+
+  var canvas = document.createElement('canvas');
+  canvas.width  = totalW;
+  canvas.height = totalH;
+  var ctx = canvas.getContext('2d');
+
+  // ── Fond général ────────────────────────────────────────────
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, 0, totalW, totalH);
+
+  // Bande rouge décorative en haut
+  ctx.fillStyle = '#e8182e';
+  ctx.fillRect(0, 0, totalW, 7);
+
+  // ── Labels RECTO / VERSO ────────────────────────────────────
+  ctx.font = 'bold 22px Arial, sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.32)';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '4px';
+  ctx.fillText('RECTO', PAD + CW / 2, PAD + LABEL_H - 12);
+  ctx.fillText('VERSO', PAD + CW + GAP + CW / 2, PAD + LABEL_H - 12);
+
+  var top = PAD + LABEL_H; // Y de départ des cartes
+
+  // ═══════════════════════════════════
+  //  RECTO (face avant)
+  // ═══════════════════════════════════
+  drawFront(ctx, PAD, top, CW, CH);
+
+  // ═══════════════════════════════════
+  //  VERSO (face arrière)
+  // ═══════════════════════════════════
+  drawBack(ctx, PAD + CW + GAP, top, CW, CH);
+
+  // ── Texte de bas de page ────────────────────────────────────
+  ctx.font = '18px Arial, sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.textAlign = 'center';
+  ctx.fillText(
+    'UNSEB Adjarra — Carte Membre Officielle 2026 | Centre Universitaire d\'Adjarra, Bénin',
+    totalW / 2, totalH - 16
+  );
+
+  // ── Déclenche le téléchargement ─────────────────────────────
+  var link = document.createElement('a');
+  link.download = 'carte-membre-UNSEB-' + (S.id || 'UNSEB-2026') + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+
+  btn.textContent = '⬇ Télécharger (PNG)';
+  btn.disabled = false;
+}
+
+
+/* ────────────────────────────────────────────────────────────
+   drawFront — Dessine le recto de la carte
+   ctx    : CanvasRenderingContext2D
+   x, y   : coin supérieur gauche
+   w, h   : largeur et hauteur
+──────────────────────────────────────────────────────────── */
+function drawFront(ctx, x, y, w, h) {
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Fond dégradé sombre
+  var grad = ctx.createLinearGradient(0, 0, w, h);
+  grad.addColorStop(0,   '#0d0d0d');
+  grad.addColorStop(0.45,'#1a0000');
+  grad.addColorStop(1,   '#2d0505');
+  roundRect(ctx, 0, 0, w, h, 22, grad);
+
+  // Bande rouge en haut
+  var stripGrad = ctx.createLinearGradient(0, 0, w, 0);
+  stripGrad.addColorStop(0,   '#8a0a1e');
+  stripGrad.addColorStop(0.3, '#e8182e');
+  stripGrad.addColorStop(0.5, '#ff6a6a');
+  stripGrad.addColorStop(0.7, '#e8182e');
+  stripGrad.addColorStop(1,   '#8a0a1e');
+  ctx.fillStyle = stripGrad;
+  ctx.fillRect(0, 0, w, 6);
+
+  // Cercle décoratif haut-droite
+  ctx.save();
+  ctx.globalAlpha = 0.08;
+  ctx.fillStyle = '#e8182e';
+  ctx.beginPath(); ctx.arc(w + 40, -40, 160, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(-30, h + 30, 110, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // ── Ligne 1 : Org + Logo ──
+  var pad = 32;
+
+  // Nom organisation
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 28px Arial, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('UNSEB', pad, 64);
+  ctx.fillStyle = '#e8182e';
+  ctx.fillText(' Adjarra', pad + ctx.measureText('UNSEB').width, 64);
+  ctx.fillStyle = 'rgba(255,255,255,0.32)';
+  ctx.font = '13px Arial, sans-serif';
+  ctx.fillText('UNION NAT. SCOLAIRES ET ETUDIANTS DU BENIN', pad, 84);
+
+  // Cercle logo (dessiné sans image pour éviter les problèmes CORS)
+  var logoX = w - pad - 56, logoY = 40, logoR = 28;
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(logoX, logoY, logoR, 0, Math.PI*2); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.06)';
+  ctx.beginPath(); ctx.arc(logoX, logoY, logoR, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#e8182e';
+  ctx.font = 'bold 14px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('UN', logoX, logoY - 4);
+  ctx.fillText('SEB', logoX, logoY + 12);
+
+  // ── Ligne 2 : Photo + Infos ──
+  var photoX = pad, photoY = 110, photoW = 100, photoH = 110;
+  roundRect(ctx, photoX, photoY, photoW, photoH, 12, '#1a0000');
+  ctx.strokeStyle = '#e8182e'; ctx.lineWidth = 3;
+  ctx.strokeRect(photoX, photoY, photoW, photoH);
+
+  // Si photo disponible
+  if (S.photo) {
+    try {
+      var img = new Image();
+      img.src = S.photo;
+      ctx.save();
+      roundRectClip(ctx, photoX + 2, photoY + 2, photoW - 4, photoH - 4, 10);
+      ctx.drawImage(img, photoX + 2, photoY + 2, photoW - 4, photoH - 4);
+      ctx.restore();
+    } catch(e) {
+      // avatar fallback
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '44px Arial'; ctx.textAlign = 'center';
+      ctx.fillText('👤', photoX + photoW/2, photoY + photoH/2 + 14);
+    }
+  } else {
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '44px Arial'; ctx.textAlign = 'center';
+    ctx.fillText('👤', photoX + photoW/2, photoY + photoH/2 + 14);
+  }
+
+  // Infos texte
+  var tx = photoX + photoW + 24;
+  ctx.textAlign = 'left';
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 30px Arial, sans-serif';
+  ctx.fillText(S.prenom || 'Prénom', tx, 148);
+  ctx.fillText((S.nom || 'NOM').toUpperCase(), tx, 182);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.42)';
+  ctx.font = '15px Arial, sans-serif';
+  ctx.letterSpacing = '1px';
+  ctx.fillText((S.filiere || 'Filière').toUpperCase() + '  ·  ' + (S.niveau || 'Niveau'), tx, 210);
+  ctx.letterSpacing = '0px';
+
+  ctx.fillStyle = 'rgba(255,255,255,0.55)';
+  ctx.font = '14px monospace';
+  ctx.fillText('N° : ' + (S.numetu || '—'), tx, 235);
+
+  ctx.fillStyle = '#e8182e';
+  ctx.font = 'bold 15px monospace';
+  ctx.fillText('ID: ' + (S.id || 'UNSEB-2026-0000'), tx, 258);
+
+  // ── Ligne 3 : Validité + Badge ──
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.font = '14px Arial, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('Valide jusqu\'au : ', pad, h - 26);
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = 'bold 14px Arial, sans-serif';
+  ctx.fillText('Décembre 2026', pad + 148, h - 26);
+
+  // Badge type
+  var badgeText = (S.badge || 'Standard').toUpperCase();
+  var badgeW = ctx.measureText(badgeText).width + 32;
+  ctx.fillStyle = '#e8182e';
+  roundRect(ctx, w - pad - badgeW, h - 46, badgeW, 28, 14, '#e8182e');
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 13px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(badgeText, w - pad - badgeW/2, h - 28);
+
+  ctx.restore();
+}
+
+
+/* ────────────────────────────────────────────────────────────
+   drawBack — Dessine le verso de la carte
+──────────────────────────────────────────────────────────── */
+function drawBack(ctx, x, y, w, h) {
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Fond dégradé inverse
+  var grad = ctx.createLinearGradient(0, 0, w, h);
+  grad.addColorStop(0, '#1a0000');
+  grad.addColorStop(1, '#0d0d0d');
+  roundRect(ctx, 0, 0, w, h, 22, grad);
+
+  // Bande magnétique noire
+  ctx.fillStyle = '#111111';
+  ctx.fillRect(0, 30, w, 56);
+  // Reflet sur la bande
+  var stripGrad = ctx.createLinearGradient(0, 30, 0, 86);
+  stripGrad.addColorStop(0, 'rgba(50,50,50,0.6)');
+  stripGrad.addColorStop(1, 'rgba(20,20,20,0.0)');
+  ctx.fillStyle = stripGrad;
+  ctx.fillRect(0, 30, w, 56);
+
+  var pad = 32;
+  var infoY = 120;
+
+  // Zone signature (fond légèrement clair)
+  roundRect(ctx, pad, infoY, w - pad*2, 130, 8, 'rgba(255,255,255,0.07)');
+
+  // QR Code dessiné simplement
+  var qSize = 90;
+  var qX = pad + 16, qY = infoY + 20;
+  drawQR(ctx, qX, qY, qSize);
+
+  // Infos à droite du QR
+  var tx = qX + qSize + 20;
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.font = 'bold 20px Arial, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText((S.prenom || 'Prénom') + ' ' + (S.nom || 'NOM').toUpperCase(), tx, infoY + 42);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '14px Arial, sans-serif';
+  ctx.fillText((S.filiere || 'Filière') + ' | ' + (S.niveau || 'Niveau'), tx, infoY + 66);
+  ctx.fillStyle = 'rgba(255,255,255,0.65)';
+  ctx.font = '13px monospace';
+  ctx.fillText('N° Etudiant: ' + (S.numetu || '—'), tx, infoY + 90);
+  ctx.fillStyle = '#e8182e';
+  ctx.font = 'bold 13px monospace';
+  ctx.fillText(S.id || 'UNSEB-2026-0000', tx, infoY + 112);
+
+  // Ligne séparatrice
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(pad, infoY + 140);
+  ctx.lineTo(w - pad, infoY + 140);
+  ctx.stroke();
+
+  // Contact UNSEB
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = '13px Arial, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('📞 01 54 32 53 24   |   📱 01 45 88 48 21   |   unseb.adjarra@gmail.com', pad, infoY + 170);
+
+  // Pied de carte
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.font = '12px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(
+    'Cette carte est la propriété de l\'UNSEB Adjarra. En cas de perte, contacter le bureau.',
+    w / 2, h - 36
+  );
+  ctx.fillText('© 2026 UNSEB — Centre Universitaire d\'Adjarra, Bénin', w / 2, h - 18);
+
+  ctx.restore();
+}
+
+
+/* ── Helpers ──────────────────────────────────────────────── */
+
+// Dessine un rectangle arrondi et le remplit
+function roundRect(ctx, x, y, w, h, r, fill) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+}
+
+// Clip en rectangle arrondi (pour la photo)
+function roundRectClip(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  ctx.clip();
+}
+
+// Dessine un QR code symbolique (motif fixe)
+function drawQR(ctx, x, y, size) {
+  var cell = size / 7;
+  var pattern = [
+    [1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,1],
+    [1,0,1,1,1,0,1],
+    [1,0,1,0,1,0,1],
+    [1,0,1,1,1,0,1],
+    [1,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1]
+  ];
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(x, y, size, size);
+  ctx.fillStyle = '#000000';
+  for (var row = 0; row < 7; row++) {
+    for (var col = 0; col < 7; col++) {
+      if (pattern[row][col]) {
+        ctx.fillRect(x + col*cell, y + row*cell, cell - 1, cell - 1);
+      }
+    }
+  }
+  // Quelques points aléatoires fixes pour simuler les données
+  var dots = [[0,3],[0,4],[0,5],[1,3],[2,5],[3,3],[3,4],[4,5],[5,3],[6,3],[6,4]];
+  ctx.fillStyle = '#000000';
+  dots.forEach(function(d){
+    if(d[1] < 7) ctx.fillRect(x + d[1]*cell, y + d[0]*cell, cell-1, cell-1);
+  });
+}
+
+
+
+</script>
+</body>
+</html>

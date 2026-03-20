@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <base href="./"/>
+  <title>Mon Profil | UNSEB Adjarra</title>
+  <link rel="stylesheet" href="unseb.css"/>
+  <style>
+    body{background:var(--gris)}
+    .profil-cover{background:var(--noir);padding:0 0 0 0;position:relative;overflow:hidden;min-height:200px}
+    .profil-cover::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 100% at 30% 50%,rgba(200,16,46,.18) 0%,transparent 65%)}
+    .profil-cover-bg{height:140px;background:linear-gradient(135deg,#0d0d0d 0%,#1a0000 50%,#2d0505 100%)}
+    .profil-header{max-width:960px;margin:0 auto;padding:0 6% 24px;position:relative;z-index:1}
+    .profil-avatar-row{display:flex;align-items:flex-end;gap:20px;margin-top:-44px;margin-bottom:16px}
+    .profil-avatar{width:88px;height:88px;border-radius:50%;background:var(--rouge-vif);display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:800;color:#fff;border:4px solid var(--gris);flex-shrink:0;cursor:pointer;position:relative;overflow:hidden;transition:opacity .2s}
+    .profil-avatar:hover{opacity:.85}
+    .profil-avatar input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .profil-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+    .profil-names{flex:1}
+    .profil-names h1{color:#fff;font-size:1.6rem;font-weight:800;margin-bottom:4px}
+    .profil-names p{color:rgba(255,255,255,.45);font-size:.88rem}
+    .profil-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .pb{padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700}
+    .pb-admin{background:rgba(200,16,46,.25);color:var(--rouge-vif)}
+    .pb-etudiant{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7)}
+    .pb-ok{background:rgba(34,197,94,.2);color:#4ade80}
+    .pb-wait{background:rgba(245,158,11,.2);color:#fbbf24}
+    .profil-body{max-width:960px;margin:0 auto;padding:28px 6% 60px}
+    .profil-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .card{background:#fff;border-radius:var(--rl);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
+    .card-head{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--border)}
+    .card-head h3{font-size:.97rem;font-weight:700}
+    .card-body{padding:22px}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .info-item label{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--texte3);display:block;margin-bottom:4px}
+    .info-item span{font-size:.9rem;font-weight:500;color:var(--texte)}
+    .form-group{margin-bottom:16px}
+    .form-group label{display:block;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--texte2);margin-bottom:7px}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;background:var(--gris);border:1.5px solid var(--border);border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--texte);outline:none;transition:border-color .22s}
+    .form-group input:focus,.form-group select:focus{border-color:var(--rouge-vif);background:#fff}
+    .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700}
+    .badge-green{background:#e8f8ee;color:#166534}
+    .badge-red{background:rgba(200,16,46,.1);color:var(--rouge)}
+    .badge-amber{background:#fff8e1;color:#92400e}
+    .badge-blue{background:#e8f4fb;color:#0066aa}
+    .progress-bar{height:8px;background:var(--gris2);border-radius:4px;overflow:hidden;margin-top:6px}
+    .progress-fill{height:100%;border-radius:4px;background:var(--rouge-vif);transition:width .8s cubic-bezier(.22,1,.36,1)}
+    .activity-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--gris2)}
+    .activity-item:last-child{border:none}
+    .act-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+    .act-text{flex:1;font-size:.85rem}
+    .act-time{font-size:.74rem;color:var(--texte3);white-space:nowrap}
+    .danger-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:none;border:1.5px solid rgba(239,68,68,.2);border-radius:30px;color:#ef4444;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .22s;width:100%;justify-content:center;margin-bottom:8px}
+    .danger-btn:hover{background:rgba(239,68,68,.07);border-color:#ef4444}
+    .logout-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:rgba(200,16,46,.07);border:1.5px solid rgba(200,16,46,.2);border-radius:30px;color:var(--rouge);font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .22s;width:100%;justify-content:center;margin-bottom:8px}
+    .logout-btn:hover{background:rgba(200,16,46,.14)}
+    .password-strength{height:3px;border-radius:3px;margin-top:5px;transition:all .3s}
+    .strength-label{font-size:.7rem;margin-top:3px}
+    .notification-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--gris2)}
+    .notification-item:last-child{border:none}
+    .notif-dot{width:8px;height:8px;border-radius:50%;background:var(--rouge-vif);flex-shrink:0}
+    .notif-dot.read{background:var(--gris2)}
+    .notif-text{flex:1;font-size:.85rem}
+    .notif-time{font-size:.74rem;color:var(--texte3)}
+    .carte-preview{background:linear-gradient(135deg,#0d0d0d 0%,#1a0000 45%,#2d0505 100%);border-radius:14px;padding:18px 20px;color:#fff;position:relative;overflow:hidden}
+    .carte-preview::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#8a0a1e,#e8182e,#ff6a6a,#e8182e,#8a0a1e)}
+    .carte-preview-name{font-weight:700;font-size:1rem;margin:10px 0 2px}
+    .carte-preview-role{font-size:.7rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.07em}
+    .carte-preview-id{font-family:monospace;font-size:.65rem;color:var(--rouge-vif);margin-top:6px}
+    .carte-preview-badge{background:var(--rouge-vif);color:#fff;font-size:.58rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;display:inline-block}
+    .tab-btns{display:flex;gap:0;background:var(--gris);border-radius:var(--r);padding:4px;margin-bottom:20px}
+    .tab-btn{flex:1;padding:8px;text-align:center;border-radius:7px;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--texte2);transition:all .22s;border:none;background:none;font-family:'Outfit',sans-serif}
+    .tab-btn.active{background:#fff;color:var(--texte);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+    .tab-panel{display:none}.tab-panel.active{display:block}
+    .gate{min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px}
+    @media(max-width:768px){.profil-grid{grid-template-columns:1fr}.info-grid{grid-template-columns:1fr}.form-row-2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar" id="mainNav">
+  <div class="logo-wrap">
+    <img src="logo.jpeg" alt="Logo UNSEB"/>
+    <div class="logo-text">UNSEB <span>Adjarra</span></div>
+  </div>
+  <nav class="nav-links" id="navLinks">
+    <a href="unseb.html" data-page="accueil">Accueil</a>
+    <a href="apropos.html" data-page="apropos">À propos</a>
+    <a href="activites.html" data-page="activites">Activités</a>
+    <a href="etudes.html" data-page="etudes">📚 Études</a>
+    <a href="calendrier.html" data-page="calendrier">Calendrier</a>
+    <a href="galerie.html" data-page="galerie">Galerie</a>
+    <a href="ressources.html" data-page="ressources">Ressources</a>
+    <a href="sondages.html" data-page="sondages">Sondages</a>
+    <a href="chat.html" data-page="chat" id="navChat">💬 Chat</a>
+    <a href="contact.html" data-page="contact">Contact</a>
+    <a href="membre.html" class="nav-cta" data-page="membre">🪪 Carte membre</a>
+  </nav>
+  <div id="navSession" style="display:flex;align-items:center;gap:8px;margin-left:8px;flex-shrink:0"></div>
+  <button type="button" class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+</header>
+
+<!-- Gate -->
+<div class="gate" id="gateDiv">
+  <div>
+    <div style="font-size:3rem;margin-bottom:16px">👤</div>
+    <h2 style="font-size:1.4rem;margin-bottom:10px">Espace réservé</h2>
+    <p style="color:var(--texte2);margin-bottom:24px">Connectez-vous pour accéder à votre profil.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="login.html?redirect=profil.html" class="btn btn-rouge">Se connecter</a>
+      <a href="login.html?tab=register" class="btn btn-dark">Créer un compte</a>
+    </div>
+  </div>
+</div>
+
+<!-- Profile content -->
+<div id="profilContent" style="display:none">
+
+  <div class="profil-cover">
+    <div class="profil-cover-bg"></div>
+    <div class="profil-header">
+      <div class="profil-avatar-row">
+        <div class="profil-avatar" id="profilAvatar" title="Cliquer pour changer la photo">
+          <span id="avatarInitial" style="position:relative;z-index:1">?</span>
+          <img id="avatarImg" src="" alt="" style="display:none;position:absolute;inset:0"/>
+          <input type="file" accept="image/*" onchange="changeAvatar(this)" title="Changer la photo"/>
+        </div>
+        <div class="profil-names">
+          <h1 id="pFullName">—</h1>
+          <p id="pSubLine">—</p>
+          <div class="profil-badges" id="pBadges"></div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;padding-bottom:4px">
+          <a href="dashboard.html" class="btn btn-outline btn-sm">📊 Dashboard</a>
+          <button type="button" class="btn btn-rouge btn-sm" onclick="saveAllEdits()">💾 Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profil-body">
+    <!-- TABS -->
+    <div class="tab-btns">
+      <button type="button" class="tab-btn active" onclick="switchTab('infos',this)">👤 Informations</button>
+      <button type="button" class="tab-btn" onclick="switchTab('carte',this)">🪪 Carte membre</button>
+      <button type="button" class="tab-btn" onclick="switchTab('activite',this)">📊 Activité</button>
+      <button type="button" class="tab-btn" onclick="switchTab('securite',this)">🔐 Sécurité</button>
+      <button type="button" class="tab-btn" onclick="switchTab('notifs',this)">🔔 Notifications</button>
+    </div>
+
+    <!-- TAB: INFOS -->
+    <div class="tab-panel active" id="tab-infos">
+      <div class="profil-grid">
+        <div>
+          <div class="card">
+            <div class="card-head"><h3>Informations personnelles</h3></div>
+            <div class="card-body">
+              <div class="form-row-2">
+                <div class="form-group"><label>Prénom *</label><input type="text" id="ePrenom"/></div>
+                <div class="form-group"><label>Nom *</label><input type="text" id="eNom"/></div>
+              </div>
+              <div class="form-group"><label>Email</label><input type="email" id="eEmail" readonly style="opacity:.6;cursor:not-allowed"/></div>
+              <div class="form-group"><label>Téléphone</label><input type="tel" id="eTel" placeholder="+229 97 00 00 00"/></div>
+              <div class="form-row-2">
+                <div class="form-group"><label>Filière</label><input type="text" id="eFiliere" placeholder="ex: Droit, Gestion…"/></div>
+                <div class="form-group"><label>Niveau</label>
+                  <select id="eNiveau"><option value="">--</option><option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option></select>
+                </div>
+              </div>
+              <div class="form-group"><label>Bio (optionnel)</label><textarea id="eBio" placeholder="Quelques mots sur vous…" style="min-height:80px;resize:vertical;padding:11px 14px;background:var(--gris);border:1.5px solid var(--border);border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:.92rem;width:100%;outline:none;transition:border-color .22s"></textarea></div>
+            </div>
+          </div>
+          <!-- Profil completion -->
+          <div class="card">
+            <div class="card-head"><h3>Complétion du profil</h3></div>
+            <div class="card-body">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <span style="font-size:.88rem;font-weight:600">Profil complété</span>
+                <span style="font-size:.9rem;font-weight:700;color:var(--rouge-vif)" id="pctLabel">0%</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" id="pctBar" style="width:0%"></div></div>
+              <div id="completionTips" style="margin-top:14px;display:flex;flex-direction:column;gap:7px"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <!-- Accès rapides -->
+          <div class="card">
+            <div class="card-head"><h3>⚡ Accès rapides</h3></div>
+            <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <a href="dashboard.html" style="display:flex;align-items:center;gap:8px;padding:12px;background:var(--gris);border-radius:var(--r);text-decoration:none;color:var(--texte);font-size:.83rem;font-weight:600;transition:all var(--t)" onmouseover="this.style.background='#e8e7e4'" onmouseout="this.style.background='var(--gris)'">📊 Dashboard</a>
+              <a href="chat.html" style="display:flex;align-items:center;gap:8px;padding:12px;background:var(--gris);border-radius:var(--r);text-decoration:none;color:var(--texte);font-size:.83rem;font-weight:600;transition:all var(--t)" onmouseover="this.style.background='#e8e7e4'" onmouseout="this.style.background='var(--gris)'">💬 Chat</a>
+              <a href="calendrier.html" style="display:flex;align-items:center;gap:8px;padding:12px;background:var(--gris);border-radius:var(--r);text-decoration:none;color:var(--texte);font-size:.83rem;font-weight:600;transition:all var(--t)" onmouseover="this.style.background='#e8e7e4'" onmouseout="this.style.background='var(--gris)'">📅 Calendrier</a>
+              <a href="sondages.html" style="display:flex;align-items:center;gap:8px;padding:12px;background:var(--gris);border-radius:var(--r);text-decoration:none;color:var(--texte);font-size:.83rem;font-weight:600;transition:all var(--t)" onmouseover="this.style.background='#e8e7e4'" onmouseout="this.style.background='var(--gris)'">📊 Sondages</a>
+              <a href="galerie.html" style="display:flex;align-items:center;gap:8px;padding:12px;background:var(--gris);border-radius:var(--r);text-decoration:none;color:var(--texte);font-size:.83rem;font-weight:600;transition:all var(--t)" onmouseover="this.style.background='#e8e7e4'" onmouseout="this.style.background='var(--gris)'">🖼️ Galerie</a>
+              <a href="ressources.html" style="display:flex;align-items:center;gap:8px;padding:12px;background:var(--gris);border-radius:var(--r);text-decoration:none;color:var(--texte);font-size:.83rem;font-weight:600;transition:all var(--t)" onmouseover="this.style.background='#e8e7e4'" onmouseout="this.style.background='var(--gris)'">📚 Ressources</a>
+            </div>
+          </div>
+          <!-- Stats rapides -->
+          <div class="card">
+            <div class="card-head"><h3>📈 Mes statistiques</h3></div>
+            <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div style="text-align:center;padding:14px;background:var(--gris);border-radius:var(--r)">
+                <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:800;color:var(--rouge-vif)" id="statsMsgs">0</div>
+                <div style="font-size:.76rem;color:var(--texte2);margin-top:3px">Messages chat</div>
+              </div>
+              <div style="text-align:center;padding:14px;background:var(--gris);border-radius:var(--r)">
+                <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:800;color:var(--rouge-vif)" id="statsVotes">0</div>
+                <div style="font-size:.76rem;color:var(--texte2);margin-top:3px">Votes donnés</div>
+              </div>
+              <div style="text-align:center;padding:14px;background:var(--gris);border-radius:var(--r)">
+                <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:800;color:var(--rouge-vif)" id="statsInsc">0</div>
+                <div style="font-size:.76rem;color:var(--texte2);margin-top:3px">Inscriptions</div>
+              </div>
+              <div style="text-align:center;padding:14px;background:var(--gris);border-radius:var(--r)">
+                <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:800;color:var(--rouge-vif)" id="statsDays">0</div>
+                <div style="font-size:.76rem;color:var(--texte2);margin-top:3px">Jours membre</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: CARTE MEMBRE -->
+    <div class="tab-panel" id="tab-carte">
+      <div class="profil-grid">
+        <div>
+          <div class="card">
+            <div class="card-head"><h3>🪪 Statut de ma carte membre</h3></div>
+            <div class="card-body">
+              <div id="carteStatusBox" style="border-radius:var(--r);padding:18px;margin-bottom:16px">
+                <!-- filled by JS -->
+              </div>
+              <div id="carteDetails" style="display:none;margin-bottom:16px">
+                <div class="info-grid">
+                  <div class="info-item"><label>ID membre</label><span id="carteId" style="font-family:monospace;font-size:.82rem;color:var(--rouge-vif)">—</span></div>
+                  <div class="info-item"><label>Type</label><span id="carteType">—</span></div>
+                  <div class="info-item"><label>Validité</label><span id="carteValidity">—</span></div>
+                  <div class="info-item"><label>Statut</label><span id="carteStatut">—</span></div>
+                </div>
+              </div>
+              <a href="membre.html" class="btn btn-rouge btn-sm" id="carteCTA">🪪 Obtenir ma carte membre →</a>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>💳 Historique des paiements</h3></div>
+            <div class="card-body" id="paiementsHistory">
+              <p style="color:var(--texte2);font-size:.87rem">Aucun paiement enregistré.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-head"><h3>Aperçu de la carte</h3></div>
+            <div class="card-body">
+              <div class="carte-preview" id="cartePreview">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div style="font-weight:800;font-size:.9rem;letter-spacing:.04em">UNSEB <span style="color:var(--rouge-vif)">Adjarra</span></div>
+                  <img src="logo.jpeg" style="width:32px;height:32px;border-radius:50%;object-fit:contain;background:#fff;padding:2px" alt=""/>
+                </div>
+                <div style="margin:16px 0 4px">
+                  <div style="width:46px;height:30px;background:rgba(255,255,255,.1);border-radius:4px;margin-bottom:10px"></div>
+                  <div class="carte-preview-name" id="cpName">Prénom NOM</div>
+                  <div class="carte-preview-role" id="cpRole">Filière · Niveau</div>
+                  <div class="carte-preview-id" id="cpId">ID: —</div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div style="font-size:.58rem;color:rgba(255,255,255,.3)">Valide jusqu'au <strong style="color:rgba(255,255,255,.5)">Déc. 2026</strong></div>
+                  <span class="carte-preview-badge" id="cpBadge">—</span>
+                </div>
+              </div>
+              <p style="font-size:.76rem;color:var(--texte3);text-align:center;margin-top:10px">Aperçu non officiel — obtenez votre vraie carte sur la page Carte membre</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>📝 Mes inscriptions aux structures</h3></div>
+            <div class="card-body" id="inscStructures">
+              <p style="color:var(--texte2);font-size:.87rem">Aucune inscription aux structures.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: ACTIVITÉ -->
+    <div class="tab-panel" id="tab-activite">
+      <div class="profil-grid">
+        <div>
+          <div class="card">
+            <div class="card-head"><h3>🕐 Activité récente</h3></div>
+            <div class="card-body" style="padding:8px 22px" id="activityFeed">
+              <p style="color:var(--texte3);padding:16px 0;font-size:.87rem">Aucune activité récente.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-head"><h3>💬 Mes messages récents dans le chat</h3></div>
+            <div class="card-body" style="padding:8px 22px" id="chatHistory">
+              <p style="color:var(--texte3);padding:16px 0;font-size:.87rem">Aucun message.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>📊 Mes votes</h3></div>
+            <div class="card-body" id="votesHistory">
+              <p style="color:var(--texte2);font-size:.87rem">Vous n'avez pas encore voté.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: SÉCURITÉ -->
+    <div class="tab-panel" id="tab-securite">
+      <div class="profil-grid">
+        <div>
+          <div class="card">
+            <div class="card-head"><h3>🔐 Changer le mot de passe</h3></div>
+            <div class="card-body">
+              <div class="form-group"><label>Mot de passe actuel *</label><input type="password" id="oldPass" placeholder="••••••••"/></div>
+              <div class="form-group">
+                <label>Nouveau mot de passe *</label>
+                <input type="password" id="newPass" placeholder="Minimum 6 caractères" oninput="updateStrength(this.value)"/>
+                <div class="password-strength" id="strengthBar" style="background:var(--gris2)"></div>
+                <div class="strength-label" id="strengthLabel" style="color:var(--texte3)"></div>
+              </div>
+              <div class="form-group"><label>Confirmer *</label><input type="password" id="confPass" placeholder="Répétez le mot de passe"/></div>
+              <div id="passMsg" style="display:none;padding:10px 14px;border-radius:var(--r);font-size:.84rem;margin-bottom:14px"></div>
+              <button type="button" class="btn btn-rouge" onclick="changePass()">Changer le mot de passe</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>📱 Sessions actives</h3></div>
+            <div class="card-body">
+              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--gris);border-radius:var(--r)">
+                <span style="font-size:1.5rem">💻</span>
+                <div>
+                  <div style="font-weight:600;font-size:.88rem">Session actuelle</div>
+                  <div style="font-size:.76rem;color:var(--texte3)">Navigateur web · Connecté maintenant</div>
+                </div>
+                <span style="margin-left:auto;background:#e8f8ee;color:#166534;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px">Active</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-head"><h3>⚠️ Zone de danger</h3></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:6px">
+              <button type="button" class="logout-btn" onclick="doLogout()">↩ Se déconnecter</button>
+              <button type="button" class="danger-btn" onclick="deleteAccount()">🗑 Supprimer mon compte</button>
+              <p style="font-size:.76rem;color:var(--texte3);text-align:center;margin-top:4px">La suppression de votre compte est irréversible.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>🔒 Informations de sécurité</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--gris);border-radius:var(--r)">
+                  <span>✅</span><div style="font-size:.84rem"><strong>Email vérifié</strong><div style="font-size:.76rem;color:var(--texte3)" id="secEmail">—</div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--gris);border-radius:var(--r)">
+                  <span>📅</span><div style="font-size:.84rem"><strong>Membre depuis</strong><div style="font-size:.76rem;color:var(--texte3)" id="secDate">—</div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--gris);border-radius:var(--r)">
+                  <span>🪪</span><div style="font-size:.84rem"><strong>Statut du compte</strong><div style="font-size:.76rem;" id="secStatut">—</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: NOTIFICATIONS -->
+    <div class="tab-panel" id="tab-notifs">
+      <div style="max-width:660px">
+        <div class="card">
+          <div class="card-head">
+            <h3>🔔 Mes notifications</h3>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="clearNotifs()">✓ Tout marquer lu</button>
+          </div>
+          <div id="notifsList" style="padding:0">
+            <div style="text-align:center;padding:40px;color:var(--texte3);font-size:.87rem">Aucune notification.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>⚙️ Préférences de notifications</h3></div>
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                <span style="font-size:.9rem">Nouvelles annonces</span>
+                <input type="checkbox" id="notifAnnonces" checked style="width:18px;height:18px;cursor:pointer;accent-color:var(--rouge-vif)"/>
+              </label>
+              <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                <span style="font-size:.9rem">Nouveaux événements</span>
+                <input type="checkbox" id="notifEvents" checked style="width:18px;height:18px;cursor:pointer;accent-color:var(--rouge-vif)"/>
+              </label>
+              <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                <span style="font-size:.9rem">Messages dans le chat</span>
+                <input type="checkbox" id="notifChat" checked style="width:18px;height:18px;cursor:pointer;accent-color:var(--rouge-vif)"/>
+              </label>
+              <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                <span style="font-size:.9rem">Nouveaux sondages</span>
+                <input type="checkbox" id="notifSondages" checked style="width:18px;height:18px;cursor:pointer;accent-color:var(--rouge-vif)"/>
+              </label>
+              <button type="button" class="btn btn-rouge btn-sm" onclick="saveNotifPrefs()">Enregistrer les préférences</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="footer-logo-wrap"><img src="logo.jpeg" alt=""/><div class="footer-logo-text">UNSEB <span>Adjarra</span></div></div><p>Union Nationale des Scolaires et Étudiants du Bénin.</p></div>
+    <div class="footer-col"><h4>Navigation</h4><ul><li><a href="unseb.html">Accueil</a></li><li><a href="apropos.html">À propos</a></li><li><a href="activites.html">Activités</a></li><li><a href="calendrier.html">Calendrier</a></li><li><a href="galerie.html">Galerie</a></li></ul></div>
+    <div class="footer-col"><h4>Espace étudiant</h4><ul><li><a href="dashboard.html">Mon dashboard</a></li><li><a href="profil.html">Mon profil</a></li><li><a href="sondages.html">Sondages</a></li><li><a href="ressources.html">Ressources</a></li><li><a href="chat.html">💬 Chat</a></li><li><a href="membre.html">🪪 Carte membre</a></li></ul></div>
+    <div class="footer-col"><h4>Contact</h4><ul><li><a href="tel:0154325324">📞 01 54 32 53 24</a></li><li><a href="https://wa.me/22901543253240" target="_blank">💬 WhatsApp</a></li><li><a href="mailto:unseb.adjarra@gmail.com">✉ unseb.adjarra@gmail.com</a></li><li><a href="contact.html">Formulaire</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 UNSEB Adjarra</span><span>Centre Universitaire d'Adjarra, Bénin</span><a href="admin.html" style="font-size:.7rem;color:rgba(255,255,255,.1)">⚙</a></div>
+</footer>
+
+<script>
+const SK='unseb_session',UK='unseb_users';
+let session=null,users=[];
+
+function gs(){try{return JSON.parse(localStorage.getItem(SK))}catch(e){return null}}
+function gu(){try{return JSON.parse(localStorage.getItem(UK))||[]}catch(e){return[]}}
+function su(u){localStorage.setItem(UK,JSON.stringify(u))}
+function ss(s){localStorage.setItem(SK,JSON.stringify(s))}
+function toast(msg,isErr=false){const t=document.createElement('div');t.className='toast'+(isErr?' err':'');t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3500)}
+
+window.addEventListener('load',()=>{
+  // nav
+  document.getElementById('navToggle').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
+  document.querySelectorAll('.nav-links a').forEach(a=>{if(a.getAttribute('href')==='profil.html')a.classList.add('active')});
+  
+  session=gs();users=gu();
+  if(!session){document.getElementById('gateDiv').style.display='flex';return}
+  document.getElementById('gateDiv').style.display='none';
+  document.getElementById('profilContent').style.display='block';
+  
+  initNavSession();
+  loadProfile();
+  renderCompletion();
+  renderStats();
+  renderCarte();
+  renderActivity();
+  renderNotifs();
+  renderSecurityInfo();
+});
+
+function initNavSession(){
+  const nav=document.getElementById('navSession');if(!nav)return;
+  const isAdmin=session.role==='admin';
+  nav.innerHTML=`<a href="dashboard.html" style="display:flex;align-items:center;gap:7px;padding:5px 13px 5px 6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:30px;color:rgba(255,255,255,.85);font-size:.82rem;font-weight:600;text-decoration:none">
+    <span style="width:24px;height:24px;border-radius:50%;background:var(--rouge-vif);display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#fff">${session.prenom[0].toUpperCase()}</span>
+    ${session.prenom}</a>`;
+}
+
+function loadProfile(){
+  const s=session;
+  document.getElementById('pFullName').textContent=s.prenom+' '+s.nom;
+  document.getElementById('pSubLine').textContent=(s.filiere||'Filière non renseignée')+' · '+(s.niveau||'');
+  document.getElementById('avatarInitial').textContent=s.prenom[0].toUpperCase();
+  if(s.avatar){document.getElementById('avatarImg').src=s.avatar;document.getElementById('avatarImg').style.display='block';document.getElementById('avatarInitial').style.display='none';}
+  // Badges
+  const badges=document.getElementById('pBadges');
+  const roleLabel=s.role==='admin'?'Administrateur':'Étudiant';
+  const statusLabel=s.statut==='actif'?'Compte actif':s.statut==='rejete'?'Compte rejeté':'En attente de validation';
+  const statusCls=s.statut==='actif'?'pb-ok':s.statut==='rejete'?'':' pb-wait';
+  badges.innerHTML=`<span class="pb ${s.role==='admin'?'pb-admin':'pb-etudiant'}">${roleLabel}</span><span class="pb ${statusCls}">${statusLabel}</span>`;
+  // Form fields
+  document.getElementById('ePrenom').value=s.prenom||'';
+  document.getElementById('eNom').value=s.nom||'';
+  document.getElementById('eEmail').value=s.email||'';
+  document.getElementById('eTel').value=s.tel||'';
+  document.getElementById('eFiliere').value=s.filiere||'';
+  document.getElementById('eNiveau').value=s.niveau||'';
+  document.getElementById('eBio').value=s.bio||'';
+  // Carte preview
+  document.getElementById('cpName').textContent=s.prenom+' '+s.nom.toUpperCase();
+  document.getElementById('cpRole').textContent=(s.filiere||'—')+' · '+(s.niveau||'—');
+}
+
+function changeAvatar(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    session.avatar=ev.target.result;ss(session);
+    const img=document.getElementById('avatarImg');
+    img.src=ev.target.result;img.style.display='block';
+    document.getElementById('avatarInitial').style.display='none';
+    toast('Photo de profil mise à jour !');
+  };
+  reader.readAsDataURL(file);
+}
+
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function saveAllEdits(){
+  const prenom=document.getElementById('ePrenom').value.trim();
+  const nom=document.getElementById('eNom').value.trim();
+  if(!prenom||!nom){toast('Prénom et nom requis',true);return}
+  session.prenom=prenom;session.nom=nom;
+  session.tel=document.getElementById('eTel').value.trim();
+  session.filiere=document.getElementById('eFiliere').value.trim();
+  session.niveau=document.getElementById('eNiveau').value;
+  session.bio=document.getElementById('eBio').value.trim();
+  ss(session);
+  const idx=users.findIndex(u=>u.email===session.email);
+  if(idx>-1){users[idx]={...users[idx],...session};su(users);}
+  loadProfile();renderCompletion();
+  toast('✅ Profil sauvegardé !');
+}
+
+function renderCompletion(){
+  const fields=[
+    {k:'prenom',l:'Prénom',v:session.prenom},
+    {k:'nom',l:'Nom',v:session.nom},
+    {k:'email',l:'Email',v:session.email},
+    {k:'tel',l:'Téléphone',v:session.tel},
+    {k:'filiere',l:'Filière',v:session.filiere},
+    {k:'niveau',l:'Niveau',v:session.niveau},
+    {k:'bio',l:'Biographie',v:session.bio},
+    {k:'avatar',l:'Photo de profil',v:session.avatar},
+  ];
+  const done=fields.filter(f=>f.v).length;
+  const pct=Math.round(done/fields.length*100);
+  document.getElementById('pctLabel').textContent=pct+'%';
+  setTimeout(()=>document.getElementById('pctBar').style.width=pct+'%',200);
+  const missing=fields.filter(f=>!f.v);
+  const tips=document.getElementById('completionTips');
+  tips.innerHTML=missing.length?missing.slice(0,4).map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--gris);border-radius:var(--r);font-size:.82rem"><span style="color:var(--rouge-vif);font-weight:700">+</span>Ajouter : <strong>${f.l}</strong></div>`).join(''):'<div style="text-align:center;padding:10px;background:#e8f8ee;border-radius:var(--r);color:#166534;font-size:.84rem;font-weight:600">✅ Profil complet !</div>';
+}
+
+function renderStats(){
+  // Chat messages
+  let chatCount=0;
+  ['general','cecal','cogheres','academique'].forEach(ch=>{
+    const msgs=JSON.parse(localStorage.getItem('unseb_chat_'+ch)||'[]');
+    chatCount+=msgs.filter(m=>m.s===session.email).length;
+  });
+  document.getElementById('statsMsgs').textContent=chatCount;
+  // Votes
+  const votes=JSON.parse(localStorage.getItem('unseb_votes')||'{}');
+  document.getElementById('statsVotes').textContent=Object.keys(votes).length;
+  // Inscriptions
+  const insc=JSON.parse(localStorage.getItem('unseb_inscriptions')||'[]');
+  document.getElementById('statsInsc').textContent=insc.filter(i=>i.nom&&session.nom&&i.nom.toLowerCase().includes(session.nom.toLowerCase())).length;
+  // Days as member
+  if(session.dateInscription){
+    const diff=Math.floor((new Date()-new Date(session.dateInscription))/(1000*60*60*24));
+    document.getElementById('statsDays').textContent=diff;
+  }
+}
+
+function renderCarte(){
+  const membres=JSON.parse(localStorage.getItem('unseb_membres')||'[]');
+  const m=membres.find(x=>(x.prenom||'').toLowerCase()===session.prenom.toLowerCase()&&(x.nom||'').toLowerCase()===session.nom.toLowerCase());
+  const box=document.getElementById('carteStatusBox');
+  const details=document.getElementById('carteDetails');
+  const cta=document.getElementById('carteCTA');
+  if(m){
+    const ok=m.statut==='actif';
+    box.style.cssText=`background:${ok?'#e8f8ee':'#fff8e1'};border:1px solid ${ok?'rgba(34,197,94,.25)':'rgba(245,158,11,.25)'};border-radius:var(--r);padding:18px`;
+    box.innerHTML=`<div style="display:flex;align-items:center;gap:12px"><span style="font-size:1.8rem">🪪</span><div><div style="font-weight:700;margin-bottom:3px">${ok?'Carte membre active':'En attente de validation'}</div><div style="font-size:.82rem;color:var(--texte2)">${ok?'Votre carte UNSEB est valide.':'Votre demande est en cours de traitement.'}</div></div></div>`;
+    document.getElementById('carteId').textContent=m.id||'—';
+    document.getElementById('carteType').textContent='Membre '+m.badge;
+    document.getElementById('carteValidity').textContent='Déc. 2026';
+    document.getElementById('carteStatut').innerHTML=`<span class="badge ${ok?'badge-green':'badge-amber'}">${ok?'Active':'En attente'}</span>`;
+    document.getElementById('cpId').textContent='ID: '+m.id;
+    document.getElementById('cpBadge').textContent=m.badge;
+    details.style.display='block';
+    cta.textContent='🪪 Voir ma carte →';
+  } else {
+    box.style.cssText='background:rgba(200,16,46,.06);border:1px solid rgba(200,16,46,.15);border-radius:var(--r);padding:18px';
+    box.innerHTML='<div style="display:flex;align-items:center;gap:12px"><span style="font-size:1.8rem">🪪</span><div><div style="font-weight:700;margin-bottom:3px">Pas encore de carte membre</div><div style="font-size:.82rem;color:var(--texte2)">Obtenez votre carte officielle UNSEB Adjarra.</div></div></div>';
+    document.getElementById('cpBadge').textContent='—';
+  }
+  // Paiements
+  const paiements=JSON.parse(localStorage.getItem('unseb_paiements')||'[]');
+  const myPay=paiements.filter(p=>p.nom&&session.nom&&p.nom.includes(session.nom));
+  const ph=document.getElementById('paiementsHistory');
+  if(myPay.length){ph.innerHTML=myPay.map(p=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gris2);font-size:.86rem"><span>${p.mode}</span><span style="font-weight:700">${(+p.montant||0).toLocaleString('fr-FR')} FCFA</span><span class="badge ${p.statut==='valide'?'badge-green':'badge-amber'}">${p.statut==='valide'?'Validé':'En attente'}</span><span style="color:var(--texte3)">${p.date||'—'}</span></div>`).join('');}
+  // Inscriptions structures
+  const insc=JSON.parse(localStorage.getItem('unseb_inscriptions')||'[]');
+  const myInsc=insc.filter(i=>i.nom&&session.nom&&i.nom.toLowerCase().includes(session.nom.toLowerCase()));
+  const is=document.getElementById('inscStructures');
+  if(myInsc.length)is.innerHTML=myInsc.map(i=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gris2)"><span class="badge badge-blue">${i.structure}</span><span style="font-size:.86rem">${i.filiere||'—'} · ${i.niveau||'—'}</span><span style="font-size:.76rem;color:var(--texte3);margin-left:auto">${i.date||'—'}</span></div>`).join('');
+}
+
+function renderActivity(){
+  const log=[];
+  const membres=JSON.parse(localStorage.getItem('unseb_membres')||'[]');
+  const m=membres.find(x=>(x.prenom||'').toLowerCase()===session.prenom.toLowerCase());
+  if(m)log.push({icon:'🪪',text:`Carte membre ${m.badge} — ${m.statut==='actif'?'Active':'En attente'}`,time:m.date||'Récent',bg:'rgba(200,16,46,.08)'});
+  log.push({icon:'🔑',text:'Connexion au compte UNSEB',time:new Date().toLocaleDateString('fr-FR'),bg:'var(--gris)'});
+  const insc=JSON.parse(localStorage.getItem('unseb_inscriptions')||'[]');
+  insc.filter(i=>i.nom&&session.nom&&i.nom.toLowerCase().includes(session.nom.toLowerCase())).forEach(i=>log.push({icon:'📝',text:`Inscription au ${i.structure}`,time:i.date||'Récent',bg:'var(--gris)'}));
+  const af=document.getElementById('activityFeed');
+  af.innerHTML=log.map(l=>`<div class="activity-item"><div class="act-icon" style="background:${l.bg}">${l.icon}</div><div class="act-text">${l.text}</div><div class="act-time">${l.time}</div></div>`).join('');
+  // Chat history
+  let allMsgs=[];
+  ['general','cecal','cogheres','academique'].forEach(ch=>{
+    const msgs=JSON.parse(localStorage.getItem('unseb_chat_'+ch)||'[]');
+    msgs.filter(m=>m.s===session.email).forEach(m=>allMsgs.push({...m,channel:ch}));
+  });
+  allMsgs.sort((a,b)=>b.ts-a.ts);
+  const ch=document.getElementById('chatHistory');
+  if(allMsgs.length)ch.innerHTML=allMsgs.slice(0,8).map(m=>`<div class="activity-item"><div class="act-icon" style="background:#e8f4fb">💬</div><div class="act-text"><span style="font-size:.72rem;color:var(--texte3)">#${m.channel} ·</span> ${m.text.substring(0,60)}${m.text.length>60?'…':''}</div><div class="act-time">${new Date(m.ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</div></div>`).join('');
+  // Votes
+  const votes=JSON.parse(localStorage.getItem('unseb_votes')||'{}');
+  const sondages=JSON.parse(localStorage.getItem('unseb_sondages')||'[]');
+  const vh=document.getElementById('votesHistory');
+  const myVotes=Object.keys(votes);
+  if(myVotes.length)vh.innerHTML=myVotes.map(sid=>{const s=sondages.find(x=>x.id===sid);const optIdx=votes[sid];return s?`<div style="padding:10px 0;border-bottom:1px solid var(--gris2)"><div style="font-size:.85rem;font-weight:600;margin-bottom:4px">${s.question}</div><div style="font-size:.8rem;color:var(--rouge-vif)">Votre vote : ${s.options[optIdx]?.texte||'—'}</div></div>`:'';}).filter(Boolean).join('');
+}
+
+function renderNotifs(){
+  const notifs=[];
+  const actus=JSON.parse(localStorage.getItem('unseb_actualites')||'[]');
+  actus.filter(a=>a.statut==='publie').slice(-3).forEach(a=>notifs.push({icon:'📢',text:a.titre,time:a.date||'Récent',read:false}));
+  const evts=JSON.parse(localStorage.getItem('unseb_evenements')||'[]');
+  evts.filter(e=>new Date(e.date)>=new Date()).slice(0,2).forEach(e=>notifs.push({icon:'📅',text:`Événement à venir : ${e.titre}`,time:e.date,read:false}));
+  notifs.push({icon:'🔑',text:'Connexion réussie à votre compte',time:new Date().toLocaleDateString('fr-FR'),read:true});
+  const div=document.getElementById('notifsList');
+  if(!notifs.length){div.innerHTML='<div style="text-align:center;padding:40px;color:var(--texte3)">Aucune notification.</div>';return}
+  div.innerHTML=notifs.map(n=>`<div class="notification-item" style="padding:14px 22px">
+    <div class="${n.read?'notif-dot read':'notif-dot'}"></div>
+    <div style="font-size:1.1rem">${n.icon}</div>
+    <div class="notif-text" style="${n.read?'color:var(--texte2)':''}">${n.text}</div>
+    <div class="notif-time">${n.time}</div>
+  </div>`).join('');
+}
+
+function clearNotifs(){document.querySelectorAll('.notif-dot').forEach(d=>d.className='notif-dot read');toast('Notifications marquées comme lues.');}
+
+function renderSecurityInfo(){
+  document.getElementById('secEmail').textContent=session.email||'—';
+  document.getElementById('secDate').textContent=session.dateInscription||'Non renseignée';
+  const sd=document.getElementById('secStatut');
+  sd.textContent=session.statut==='actif'?'✅ Compte actif':session.statut==='rejete'?'❌ Rejeté':'⏳ En attente';
+  sd.style.color=session.statut==='actif'?'#166534':session.statut==='rejete'?'#ef4444':'#92400e';
+}
+
+function updateStrength(pass){
+  const bar=document.getElementById('strengthBar');const lbl=document.getElementById('strengthLabel');
+  if(!pass){bar.style.background='var(--gris2)';bar.style.width='0';lbl.textContent='';return}
+  let s=0;if(pass.length>=6)s++;if(pass.length>=10)s++;if(/[A-Z]/.test(pass))s++;if(/[0-9]/.test(pass))s++;if(/[^A-Za-z0-9]/.test(pass))s++;
+  const lvl=[{c:'#ef4444',l:'Très faible',w:'20%'},{c:'#f97316',l:'Faible',w:'40%'},{c:'#eab308',l:'Moyen',w:'60%'},{c:'#22c55e',l:'Fort',w:'80%'},{c:'#16a34a',l:'Très fort',w:'100%'}][Math.min(s,4)];
+  bar.style.background=lvl.c;bar.style.width=lvl.w;lbl.textContent=lvl.l;lbl.style.color=lvl.c;
+}
+
+function changePass(){
+  const old=document.getElementById('oldPass').value;const np=document.getElementById('newPass').value;const cp=document.getElementById('confPass').value;
+  const msg=document.getElementById('passMsg');
+  msg.style.display='none';
+  if(!old||!np){msg.style.display='block';msg.style.background='rgba(200,16,46,.07)';msg.style.color='var(--rouge-vif)';msg.textContent='Remplissez tous les champs.';return}
+  const u=users.find(x=>x.email===session.email);
+  if(u&&u.pass!==old){msg.style.display='block';msg.style.background='rgba(200,16,46,.07)';msg.style.color='var(--rouge-vif)';msg.textContent='Ancien mot de passe incorrect.';return}
+  if(np.length<6){msg.style.display='block';msg.style.background='rgba(200,16,46,.07)';msg.style.color='var(--rouge-vif)';msg.textContent='Minimum 6 caractères.';return}
+  if(np!==cp){msg.style.display='block';msg.style.background='rgba(200,16,46,.07)';msg.style.color='var(--rouge-vif)';msg.textContent='Les mots de passe ne correspondent pas.';return}
+  const idx=users.findIndex(x=>x.email===session.email);
+  if(idx>-1){users[idx].pass=np;su(users);}
+  document.getElementById('oldPass').value='';document.getElementById('newPass').value='';document.getElementById('confPass').value='';
+  msg.style.display='block';msg.style.background='#e8f8ee';msg.style.color='#166534';msg.textContent='✅ Mot de passe changé avec succès !';
+  toast('Mot de passe mis à jour !');
+}
+
+function saveNotifPrefs(){toast('Préférences enregistrées !');}
+
+function doLogout(){localStorage.removeItem(SK);window.location.href='login.html';}
+
+function deleteAccount(){
+  if(!confirm('Supprimer définitivement votre compte ? Action irréversible.'))return;
+  const idx=users.findIndex(u=>u.email===session.email);
+  if(idx>-1){users.splice(idx,1);su(users);}
+  localStorage.removeItem(SK);
+  window.location.href='unseb.html';
+}
+</script>
+</body>
+</html>

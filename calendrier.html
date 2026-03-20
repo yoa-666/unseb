@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <base href="./"/>
+  <title>Calendrier | UNSEB Adjarra</title>
+  <link rel="stylesheet" href="unseb.css"/>
+  <style>
+    body{background:var(--gris)}
+    .cal-wrap{max-width:1100px;margin:0 auto;padding:40px 6%}
+    .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:14px}
+    .cal-nav{display:flex;align-items:center;gap:12px}
+    .cal-nav button{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all var(--t)}
+    .cal-nav button:hover{border-color:var(--rouge-vif);background:rgba(200,16,46,.07)}
+    .cal-month{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;min-width:220px;text-align:center}
+    .cal-filters{display:flex;gap:8px;flex-wrap:wrap}
+    .cal-filter{padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:.8rem;font-weight:600;cursor:pointer;transition:all var(--t)}
+    .cal-filter.active,.cal-filter:hover{border-color:var(--rouge-vif);background:rgba(200,16,46,.07);color:var(--rouge-vif)}
+    .cal-grid-header{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+    .cal-grid-header div{text-align:center;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--texte3);padding:8px}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+    .cal-day{min-height:96px;border-radius:var(--r);border:1.5px solid var(--border);background:#fff;padding:8px;cursor:pointer;transition:all var(--t);position:relative}
+    .cal-day:hover{border-color:var(--rouge-vif);box-shadow:var(--shadow)}
+    .cal-day.other-month{background:var(--gris);opacity:.55}
+    .cal-day.today{border-color:var(--rouge-vif);border-width:2px}
+    .cal-day.today .cal-day-num{background:var(--rouge-vif);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+    .cal-day-num{font-size:.85rem;font-weight:600;margin-bottom:4px;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+    .cal-event{font-size:.67rem;font-weight:600;padding:2px 6px;border-radius:4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+    .cat-cecal{background:rgba(245,158,11,.15);color:#92400e}
+    .cat-cogheres{background:#e8f4fb;color:#0066aa}
+    .cat-academique{background:#e8f8ee;color:#166534}
+    .cat-ag{background:rgba(200,16,46,.1);color:var(--rouge)}
+    .cat-formation{background:#f3e8ff;color:#6b21a8}
+    .cat-autre{background:var(--gris2);color:var(--texte2)}
+    .more-events{font-size:.65rem;color:var(--texte3);cursor:pointer}
+    /* Sidebar events list */
+    .cal-layout{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+    .events-sidebar{background:#fff;border-radius:var(--rl);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;position:sticky;top:80px}
+    .es-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .es-head h3{font-size:.95rem;font-weight:700}
+    .es-list{max-height:500px;overflow-y:auto}
+    .es-item{display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid var(--gris2);cursor:pointer;transition:background var(--t)}
+    .es-item:hover{background:var(--gris)}
+    .es-item:last-child{border:none}
+    .es-date{min-width:40px;height:40px;background:var(--rouge-vif);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+    .es-day{font-size:1rem;font-weight:800;line-height:1}
+    .es-mon{font-size:.55rem;font-weight:700;text-transform:uppercase}
+    .es-title{font-weight:600;font-size:.87rem;margin-bottom:3px}
+    .es-meta{font-size:.74rem;color:var(--texte3)}
+    .es-empty{text-align:center;padding:32px;color:var(--texte3);font-size:.87rem}
+    /* Modal */
+    .modal-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#fff;border-radius:var(--rl);padding:36px;width:100%;max-width:480px;box-shadow:0 24px 80px rgba(0,0,0,.18);animation:slideUp .3s cubic-bezier(.34,1.56,.64,1);max-height:90vh;overflow-y:auto}
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .modal-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--texte3);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .modal-close:hover{background:var(--gris2)}
+    @media(max-width:900px){.cal-layout{grid-template-columns:1fr}.events-sidebar{position:static}}
+    @media(max-width:640px){.cal-day{min-height:60px}.cal-event{display:none}.cal-day-num{font-size:.8rem}}
+  </style>
+</head>
+<body>
+<header class="navbar">
+  <div class="logo-wrap"><img src="logo.jpeg" alt="Logo UNSEB"/><div class="logo-text">UNSEB <span>Adjarra</span></div></div>
+  <nav class="nav-links" id="navLinks">
+    <a href="unseb.html" data-page="accueil">Accueil</a>
+    <a href="apropos.html" data-page="apropos">À propos</a>
+    <a href="activites.html" data-page="activites">Activités</a>
+    <a href="etudes.html" data-page="etudes">📚 Études</a>
+    <a href="calendrier.html" data-page="calendrier">Calendrier</a>
+    <a href="galerie.html" data-page="galerie">Galerie</a>
+    <a href="ressources.html" data-page="ressources">Ressources</a>
+    <a href="sondages.html" data-page="sondages">Sondages</a>
+    <a href="chat.html" data-page="chat" id="navChat">💬 Chat</a>
+    <a href="contact.html" data-page="contact">Contact</a>
+    <a href="membre.html" class="nav-cta" data-page="membre">🪪 Carte membre</a>
+  </nav>
+  <div id="navSession" style="display:flex;align-items:center;gap:8px;margin-left:4px"></div>
+  <button type="button" class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+</header>
+
+<section class="page-hero">
+  <div class="breadcrumb">Accueil → <span>Calendrier</span></div>
+  <h1>Calendrier des événements</h1>
+  <p>Consultez et inscrivez-vous aux activités UNSEB Adjarra.</p>
+</section>
+
+<div class="cal-wrap">
+  <div class="cal-header">
+    <div class="cal-nav">
+      <button type="button" onclick="prevMonth()">‹</button>
+      <div class="cal-month" id="calMonth">—</div>
+      <button type="button" onclick="nextMonth()">›</button>
+    </div>
+    <div class="cal-filters">
+      <div class="cal-filter active" onclick="setFilter('all',this)">Tous</div>
+      <div class="cal-filter" onclick="setFilter('CECAL',this)">CECAL</div>
+      <div class="cal-filter" onclick="setFilter('Académique',this)">Académique</div>
+      <div class="cal-filter" onclick="setFilter('Assemblée Générale',this)">AG</div>
+      <div class="cal-filter" onclick="setFilter('Formation',this)">Formation</div>
+    </div>
+  </div>
+  <div class="cal-layout">
+    <div>
+      <div class="cal-grid-header">
+        <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+    <div class="events-sidebar">
+      <div class="es-head"><h3>📅 Événements à venir</h3></div>
+      <div class="es-list" id="esList"><div class="es-empty">Aucun événement programmé.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Event detail modal -->
+<div class="modal-overlay" id="modalEvt">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="mEvtTitle">—</h3>
+      <button type="button" class="modal-close" onclick="document.getElementById('modalEvt').classList.remove('open')">✕</button>
+    </div>
+    <div id="mEvtBody"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+      <button type="button" class="btn btn-rouge btn-sm" onclick="inscrireEvent()">✅ M'inscrire à cet événement</button>
+      <a href="contact.html" class="btn btn-ghost btn-sm">✉ Contacter l'UNSEB</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="footer-logo-wrap"><img src="logo.jpeg" alt="Logo UNSEB"/><div class="footer-logo-text">UNSEB <span>Adjarra</span></div></div><p>Union Nationale des Scolaires et Étudiants du Bénin — Sous-section d'Adjarra.</p></div>
+    <div class="footer-col"><h4>Navigation</h4><ul><li><a href="unseb.html">Accueil</a></li><li><a href="apropos.html">À propos</a></li><li><a href="activites.html">Activités</a></li><li><a href="calendrier.html">Calendrier</a></li><li><a href="galerie.html">Galerie</a></li></ul></div>
+    <div class="footer-col"><h4>Espace étudiant</h4><ul><li><a href="dashboard.html">Mon dashboard</a></li><li><a href="profil.html">Mon profil</a></li><li><a href="sondages.html">Sondages</a></li><li><a href="ressources.html">Ressources</a></li><li><a href="chat.html">💬 Chat</a></li><li><a href="membre.html">🪪 Carte membre</a></li></ul></div>
+    <div class="footer-col"><h4>Contact</h4><ul><li><a href="tel:0154325324">📞 01 54 32 53 24</a></li><li><a href="https://wa.me/22901543253240" target="_blank">💬 WhatsApp</a></li><li><a href="mailto:unseb.adjarra@gmail.com">✉ unseb.adjarra@gmail.com</a></li><li><a href="contact.html">Formulaire</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 UNSEB Adjarra — Tous droits réservés</span><span>Centre Universitaire d'Adjarra, Bénin</span><a href="admin.html" style="font-size:.7rem;color:rgba(255,255,255,.1);transition:color .3s" onmouseover="this.style.color='rgba(255,255,255,.5)'" onmouseout="this.style.color='rgba(255,255,255,.1)'">⚙</a></div>
+</footer>
+
+
+
+<script>
+// ── Bannière d'urgence ──
+(function(){
+  try{
+    const b=JSON.parse(localStorage.getItem('unseb_banniere')||'null');
+    if(!b||!b.active)return;
+    const colors={urgent:'#c8102e',info:'#0066aa',success:'#166534'};
+    const bgs={urgent:'rgba(200,16,46,.97)',info:'rgba(0,80,160,.97)',success:'rgba(22,101,52,.97)'};
+    const div=document.createElement('div');
+    div.style.cssText=`background:${bgs[b.type]||bgs.urgent};color:#fff;padding:10px 40px 10px 20px;text-align:center;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:600;position:relative;z-index:999;line-height:1.5`;
+    div.innerHTML=b.msg+`<button onclick="this.parentElement.remove()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.7);font-size:1.1rem;cursor:pointer;padding:4px">✕</button>`;
+    document.body.insertBefore(div,document.body.firstChild);
+  }catch(e){}
+})();
+// ── Notification badge on chat link ──
+(function(){
+  try{
+    const msgs=JSON.parse(localStorage.getItem('unseb_chat_general')||'[]');
+    const session=JSON.parse(localStorage.getItem('unseb_session')||'null');
+    if(!session)return;
+    const lastSeen=parseInt(localStorage.getItem('unseb_chat_last_seen')||'0');
+    const newMsgs=msgs.filter(m=>m.ts>lastSeen&&m.s!==session.email).length;
+    if(!newMsgs)return;
+    const chatLinks=document.querySelectorAll('a[href="chat.html"]');
+    chatLinks.forEach(l=>{
+      const badge=document.createElement('span');
+      badge.style.cssText='background:var(--rouge-vif
+renderCalendar();
+</script>
+</body>
+</html>
