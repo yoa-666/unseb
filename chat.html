@@ -298,7 +298,7 @@ async function sendAudioMsg(blob){
   const reader = new FileReader();
   reader.readAsDataURL(blob);
   reader.onloadend = async () => {
-    const d = await fetch('api/chat.php?action=envoyer_prive',{
+    const d = await fetch('https://unseb.xo.je/api/chat.php?action=envoyer_prive',{
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({destinataire_id:currentPrivDest, contenu:'[AUDIO]', audio_data:reader.result, type_msg:'audio'})
     }).then(r=>r.json());
@@ -324,14 +324,14 @@ function showStickerCat(cat, btn){
 async function sendSticker(emoji){
   document.getElementById('stickerPicker').classList.remove('show');
   if(stickerTarget === 'group'){
-    const d = await fetch('api/chat.php?action=envoyer_groupe',{
+    const d = await fetch('https://unseb.xo.je/api/chat.php?action=envoyer_groupe',{
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({canal:currentCanal, contenu:emoji, type_msg:'sticker'})
     }).then(r=>r.json());
     if(d.success){ lastGroupTs=Math.max(0,lastGroupTs-1); await pollGroupMessages(); }
   } else {
     if(!currentPrivDest) return;
-    const d = await fetch('api/chat.php?action=envoyer_prive',{
+    const d = await fetch('https://unseb.xo.je/api/chat.php?action=envoyer_prive',{
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({destinataire_id:currentPrivDest, contenu:emoji, type_msg:'sticker'})
     }).then(r=>r.json());
@@ -346,7 +346,7 @@ async function sendGroupMedia(input){
   reader.readAsDataURL(file);
   reader.onloadend = async () => {
     const isVideo = file.type.startsWith('video/');
-    const d = await fetch('api/chat.php?action=envoyer_groupe',{
+    const d = await fetch('https://unseb.xo.je/api/chat.php?action=envoyer_groupe',{
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({canal:currentCanal, contenu:'[MEDIA]', type_msg:isVideo?'video':'image', media_data:reader.result, media_type:file.type})
     }).then(r=>r.json());
@@ -361,7 +361,7 @@ async function sendPrivMedia(input){
   reader.readAsDataURL(file);
   reader.onloadend = async () => {
     const isVideo = file.type.startsWith('video/');
-    const d = await fetch('api/chat.php?action=envoyer_prive',{
+    const d = await fetch('https://unseb.xo.je/api/chat.php?action=envoyer_prive',{
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({destinataire_id:currentPrivDest, contenu:'[MEDIA]', type_msg:isVideo?'video':'image', media_data:reader.result, media_type:file.type})
     }).then(r=>r.json());
@@ -375,7 +375,7 @@ async function validerCecal(){
   const mdp = document.getElementById('cecalMdpInput').value.trim();
   const err = document.getElementById('cecalErr');
   err.style.display='none';
-  const d = await fetch('api/chat.php?action=rejoindre_cecal',{
+  const d = await fetch('https://unseb.xo.je/api/chat.php?action=rejoindre_cecal',{
     method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({cecal_mdp:mdp})
   }).then(r=>r.json());
@@ -391,7 +391,7 @@ async function validerCecal(){
 }
 
 async function showMonMdpCecal(){
-  const d = await fetch('api/chat.php?action=mon_cecal_mdp').then(r=>r.json());
+  const d = await fetch('https://unseb.xo.je/api/chat.php?action=mon_cecal_mdp').then(r=>r.json());
   const info = document.getElementById('cecalMdpInfo');
   info.style.display='block';
   info.innerHTML = `Matricule : <strong>${d.matricule}</strong><br>Mot de passe CECAL : <strong style="color:var(--rouge-vif)">${d.cecal_mdp}</strong>`;
@@ -400,7 +400,7 @@ async function showMonMdpCecal(){
 // ── INIT ────────────────────────────────────────
 (async function(){
   try{
-    const r = await fetch('api/auth.php?action=me');
+    const r = await fetch('https://unseb.xo.je/api/auth.php?action=me');
     const d = await r.json();
     if(!d.success){ window.location.href='login.html'; return; }
     SESSION = d.user;
@@ -430,7 +430,7 @@ async function showMonMdpCecal(){
 async function switchCanal(canal, label, desc, btn){
   // CECAL : vérifier accès
   if(canal === 'cecal'){
-    const d = await fetch('api/chat.php?action=mon_cecal_mdp').then(r=>r.json());
+    const d = await fetch('https://unseb.xo.je/api/chat.php?action=mon_cecal_mdp').then(r=>r.json());
     if(!d.est_cecal){
       document.querySelectorAll('.chi,.mb-item').forEach(e=>e.classList.remove('active'));
       btn.classList.add('active');
@@ -473,7 +473,7 @@ async function switchCanal(canal, label, desc, btn){
 // ── MESSAGES GROUPE ─────────────────────────────
 async function loadGroupMessages(){
   try{
-    const r = await fetch('api/chat.php?action=messages_groupe&canal='+currentCanal);
+    const r = await fetch('https://unseb.xo.je/api/chat.php?action=messages_groupe&canal='+currentCanal);
     const d = await r.json();
     if(!d.success) return;
     const zone = document.getElementById('msgsZone');
@@ -494,7 +494,7 @@ async function loadGroupMessages(){
 async function pollGroupMessages(){
   if(!currentCanal || currentPrivDest) return;
   try{
-    const d = await fetch('api/chat.php?action=messages_groupe&canal='+currentCanal+'&depuis='+lastGroupTs).then(r=>r.json());
+    const d = await fetch('https://unseb.xo.je/api/chat.php?action=messages_groupe&canal='+currentCanal+'&depuis='+lastGroupTs).then(r=>r.json());
     if(!d.success || !d.messages.length) return;
     const zone=document.getElementById('msgsZone');
     let added=false;
@@ -509,7 +509,7 @@ async function sendMsg(){
   const btn=document.getElementById('sendBtn');
   btn.disabled=true; ta.value=''; ta.style.height='';
   try{
-    const d=await fetch('api/chat.php?action=envoyer_groupe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({canal:currentCanal,contenu})}).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/chat.php?action=envoyer_groupe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({canal:currentCanal,contenu})}).then(r=>r.json());
     if(!d.success){ ta.value=contenu; alert(d.error); }
     else{ lastGroupTs=Math.max(0,lastGroupTs-1); await pollGroupMessages(); }
   } catch(e){ ta.value=contenu; }
@@ -519,7 +519,7 @@ async function sendMsg(){
 // ── MESSAGES PRIVÉS ─────────────────────────────
 async function loadMembres(){
   try{
-    const d=await fetch('api/membres.php?action=liste_chat').then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/membres.php?action=liste_chat').then(r=>r.json());
     const zone=document.getElementById('mbList');
     if(!d.success||!d.membres.length){ zone.innerHTML='<p style="font-size:.75rem;color:rgba(255,255,255,.2);padding:4px 6px">Aucun autre membre.</p>'; return; }
     zone.innerHTML=d.membres.map(m=>`<div class="mb-item" id="mb_${m.id}" onclick="openPriv(${m.id},this.dataset.name)" data-name="${esc(m.prenom+' '+m.nom)}"><div class="mb-av">${m.prenom[0].toUpperCase()}</div><span class="mb-name">${esc(m.prenom+' '+m.nom)}</span></div>`).join('');
@@ -548,7 +548,7 @@ function openPriv(id,name){
 async function loadPrivMessages(){
   if(!currentPrivDest) return;
   try{
-    const d=await fetch('api/chat.php?action=messages_prives&avec='+currentPrivDest).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/chat.php?action=messages_prives&avec='+currentPrivDest).then(r=>r.json());
     if(!d.success) return;
     const hasNew=d.messages.some(m=>!displayedPrivIds.has(m.id));
     if(!hasNew) return;
@@ -585,7 +585,7 @@ async function sendPrivMsg(){
   const contenu=ta.value.trim(); if(!contenu||!currentPrivDest) return;
   ta.value=''; ta.style.height='';
   try{
-    const d=await fetch('api/chat.php?action=envoyer_prive',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({destinataire_id:currentPrivDest,contenu})}).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/chat.php?action=envoyer_prive',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({destinataire_id:currentPrivDest,contenu})}).then(r=>r.json());
     if(!d.success){ ta.value=contenu; alert(d.error); }
     else await loadPrivMessages();
   } catch(e){ ta.value=contenu; }
@@ -595,7 +595,7 @@ async function sendPrivMsg(){
 async function delMsg(id,type){
   if(!confirm('Supprimer ce message ?')) return;
   try{
-    const d=await fetch('api/chat.php?action=supprimer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,type})}).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/chat.php?action=supprimer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,type})}).then(r=>r.json());
     if(d.success){ document.querySelector(`[data-id="${id}"]`)?.remove(); displayedGroupIds.delete(id); displayedPrivIds.delete(id); }
   } catch(e){}
 }

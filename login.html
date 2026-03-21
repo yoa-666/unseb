@@ -254,7 +254,7 @@ async function doLogin() {
   if(!email||!pass){showAlert('Email et mot de passe requis.');return;}
   setLoading('btnLogin',true,'Connexion…');
   try {
-    const r=await fetch('api/auth.php?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,mot_de_passe:pass})});
+    const r=await fetch('https://unseb.xo.je/api/auth.php?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,mot_de_passe:pass})});
     const d=await r.json();
     if(!d.success){showAlert(d.error);return;}
     localStorage.setItem('unseb_session',JSON.stringify(d.user));
@@ -316,7 +316,7 @@ async function goStep3() {
   setLoading('btnStep2',true,'Envoi du code…');
   try {
     // Générer OTP via API
-    const r=await fetch('api/otp.php?action=envoyer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:regData.email,prenom:regData.prenom})});
+    const r=await fetch('https://unseb.xo.je/api/otp.php?action=envoyer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:regData.email,prenom:regData.prenom})});
     const d=await r.json();
     if(!d.success){showAlert(d.error);return;}
 
@@ -366,7 +366,7 @@ function startOTPTimer(seconds) {
 async function resendOTP() {
   hideAlert();
   try {
-    const r=await fetch('api/otp.php?action=envoyer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:regData.email,prenom:regData.prenom})});
+    const r=await fetch('https://unseb.xo.je/api/otp.php?action=envoyer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:regData.email,prenom:regData.prenom})});
     const d=await r.json();
     if(!d.success){showAlert(d.error);return;}
     const ej=d.emailjs_data;
@@ -421,7 +421,7 @@ async function verifyOTP() {
   setLoading('btnVerify',true,'Vérification…');
   try {
     // 1. Vérifier le code OTP
-    const vr=await fetch('api/otp.php?action=verifier',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:regData.email,code})});
+    const vr=await fetch('https://unseb.xo.je/api/otp.php?action=verifier',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:regData.email,code})});
     const vd=await vr.json();
     if(!vd.success){showAlert(vd.error);return;}
 
@@ -432,7 +432,7 @@ async function verifyOTP() {
     const photoFile=document.getElementById('regPhoto').files[0];
     if(photoFile) fd.append('photo',photoFile);
 
-    const rr=await fetch('api/auth.php?action=register',{method:'POST',body:fd});
+    const rr=await fetch('https://unseb.xo.je/api/auth.php?action=register',{method:'POST',body:fd});
     const rd=await rr.json();
     if(!rd.success){showAlert(rd.error);return;}
 
@@ -477,7 +477,7 @@ document.addEventListener('keydown',e=>{
   const s=localStorage.getItem('unseb_session');
   if(!s) return;
   try{
-    const r=await fetch('api/auth.php?action=me');
+    const r=await fetch('https://unseb.xo.je/api/auth.php?action=me');
     const d=await r.json();
     if(d.success) window.location.href=d.user.role==='admin'?'admin.html':'dashboard.html';
     else localStorage.removeItem('unseb_session');
