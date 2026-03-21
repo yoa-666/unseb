@@ -289,7 +289,7 @@ let mesInscriptions = [];
 // ── INIT ─────────────────────────────────────
 (async function(){
   try{
-    const r=await fetch('https://unseb.xo.je/api/auth.php?action=me');
+    const r=await fetch('http://unseb.xo.je/api/auth.php?action=me');
     const d=await r.json();
     if(!d.success){window.location.href='login.html';return;}
     if(d.user.role==='admin'){window.location.href='admin.html';return;}
@@ -341,7 +341,7 @@ function closeModal(){document.getElementById('modalInscrip').classList.remove('
 // ── ANNONCES ─────────────────────────────────
 async function loadAnnonces(){
   try{
-    const d=await fetch('https://unseb.xo.je/api/evenements.php?action=annonces').then(r=>r.json());
+    const d=await fetch('http://unseb.xo.je/api/evenements.php?action=annonces').then(r=>r.json());
     const zone=document.getElementById('annoncesHome');
     if(!d.success||!d.annonces.length){
       zone.innerHTML='<p style="color:var(--texte2);font-size:.87rem">Aucune annonce pour le moment.</p>';return;
@@ -364,7 +364,7 @@ async function loadAnnonces(){
 // ── INSCRIPTIONS ─────────────────────────────
 async function loadMesInscriptions(){
   try{
-    const d=await fetch('https://unseb.xo.je/api/inscriptions.php?action=mes_inscriptions').then(r=>r.json());
+    const d=await fetch('http://unseb.xo.je/api/inscriptions.php?action=mes_inscriptions').then(r=>r.json());
     if(d.success){
       mesInscriptions=d.inscriptions;
       document.getElementById('icInscriptions').textContent=d.inscriptions.filter(i=>i.statut==='accepte').length;
@@ -419,7 +419,7 @@ async function submitInscription(){
   const btn=document.getElementById('btnSubmitInscrip');
   btn.disabled=true;btn.textContent='Envoi…';
   try{
-    const d=await fetch('https://unseb.xo.je/api/inscriptions.php?action=inscrire',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({section,domaine,message})}).then(r=>r.json());
+    const d=await fetch('http://unseb.xo.je/api/inscriptions.php?action=inscrire',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({section,domaine,message})}).then(r=>r.json());
     if(!d.success){showAlert('alertInscrip',d.error);btn.disabled=false;btn.textContent='Envoyer la demande';return;}
     // EmailJS notif admin
     if(d.emailjs_data){
@@ -438,7 +438,7 @@ async function submitInscription(){
 async function loadCarte(){
   const zone=document.getElementById('carteZone');
   try{
-    const d=await fetch('https://unseb.xo.je/api/cartes.php?action=ma_carte').then(r=>r.json());
+    const d=await fetch('http://unseb.xo.je/api/cartes.php?action=ma_carte').then(r=>r.json());
     if(!d.success&&d.code==='no_card'){
       if(SESSION.statut!=='valide'){
         zone.innerHTML='<p style="color:var(--texte2)">⏳ Votre compte doit être validé pour générer une carte.</p>';return;
@@ -471,7 +471,7 @@ async function loadCarte(){
 
 async function genererCarte(){
   try{
-    const d=await fetch('https://unseb.xo.je/api/cartes.php?action=generer',{method:'POST'}).then(r=>r.json());
+    const d=await fetch('http://unseb.xo.je/api/cartes.php?action=generer',{method:'POST'}).then(r=>r.json());
     if(!d.success){toast(d.error,'error');return;}
     if(d.emailjs_data){
       const ej=d.emailjs_data;
@@ -530,7 +530,7 @@ function rrFill(ctx,x,y,w,h,r,fill){
 // ── ÉVÉNEMENTS ───────────────────────────────
 async function loadEvenements(){
   try{
-    const d=await fetch('https://unseb.xo.je/api/evenements.php?action=liste').then(r=>r.json());
+    const d=await fetch('http://unseb.xo.je/api/evenements.php?action=liste').then(r=>r.json());
     const zone=document.getElementById('eventList');
     if(!d.success||!d.evenements.length){zone.innerHTML='<p style="color:var(--texte2)">Aucun événement programmé.</p>';return;}
     const TYPES={academique:'🎓 Académique',culturel:'🎭 Culturel',AG:'🗣️ Assemblée',formation:'💻 Formation',autre:'📌 Autre'};
@@ -559,7 +559,7 @@ async function loadEvenements(){
 // ── GALERIE ───────────────────────────────────
 async function loadGalerie(){
   try{
-    const d=await fetch('https://unseb.xo.je/api/galerie.php?action=liste').then(r=>r.json());
+    const d=await fetch('http://unseb.xo.je/api/galerie.php?action=liste').then(r=>r.json());
     const grid=document.getElementById('membreGalerieGrid');
     if(!d.success||!d.galerie.length){grid.innerHTML='<p style="color:var(--texte2)">Galerie vide pour le moment.</p>';return;}
     grid.innerHTML=d.galerie.map(item=>`
@@ -575,7 +575,7 @@ async function loadGalerie(){
 // ── PROFIL ────────────────────────────────────
 async function loadProfil(){
   try{
-    const d=await fetch('https://unseb.xo.je/api/membres.php?action=profil').then(r=>r.json());
+    const d=await fetch('http://unseb.xo.je/api/membres.php?action=profil').then(r=>r.json());
     if(!d.success)return;
     const m=d.membre;
     document.getElementById('pPrenom').value=m.prenom||'';
@@ -595,13 +595,13 @@ async function saveProfil(){
   const niveau=document.getElementById('pNiveau').value;
   const telephone=document.getElementById('pTel').value.trim();
   try{
-    const d=await fetch('https://unseb.xo.je/api/membres.php?action=modifier',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prenom,nom,filiere,niveau,telephone})}).then(r=>r.json());
+    const d=await fetch('http://unseb.xo.je/api/membres.php?action=modifier',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prenom,nom,filiere,niveau,telephone})}).then(r=>r.json());
     if(!d.success){showAlert('alertProfil',d.error);return;}
     // Upload photo si sélectionnée
     const photoFile=document.getElementById('pPhoto').files[0];
     if(photoFile){
       const fd=new FormData();fd.append('photo',photoFile);
-      await fetch('https://unseb.xo.je/api/membres.php?action=upload_photo',{method:'POST',body:fd});
+      await fetch('http://unseb.xo.je/api/membres.php?action=upload_photo',{method:'POST',body:fd});
     }
     showAlert('alertProfil','✅ Profil mis à jour !','success');
     SESSION.prenom=prenom;SESSION.nom=nom;
@@ -619,7 +619,7 @@ async function changeMdp(){
   if(nouveau!==nouveau2){showAlert('alertMdp','Les mots de passe ne correspondent pas.');return;}
   if(nouveau.length<8){showAlert('alertMdp','Minimum 8 caractères.');return;}
   try{
-    const d=await fetch('https://unseb.xo.je/api/auth.php?action=change_password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ancien_mdp:ancien,nouveau_mdp:nouveau})}).then(r=>r.json());
+    const d=await fetch('http://unseb.xo.je/api/auth.php?action=change_password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ancien_mdp:ancien,nouveau_mdp:nouveau})}).then(r=>r.json());
     if(!d.success){showAlert('alertMdp',d.error);return;}
     showAlert('alertMdp','✅ Mot de passe modifié avec succès !','success');
     document.getElementById('oldMdp').value='';document.getElementById('newMdp').value='';document.getElementById('newMdp2').value='';
@@ -629,7 +629,7 @@ async function changeMdp(){
 // ── CHAT NON LUS ─────────────────────────────
 async function checkNonLus(){
   try{
-    const d=await fetch('https://unseb.xo.je/api/chat.php?action=non_lus').then(r=>r.json());
+    const d=await fetch('http://unseb.xo.je/api/chat.php?action=non_lus').then(r=>r.json());
     if(d.success&&d.non_lus>0){
       const b=document.getElementById('sideNonLus');
       b.style.display='inline-block';b.textContent=d.non_lus>9?'9+':d.non_lus;
@@ -639,7 +639,7 @@ async function checkNonLus(){
 
 // ── LOGOUT ───────────────────────────────────
 async function doLogout(){
-  try{await fetch('https://unseb.xo.je/api/auth.php?action=logout');}catch(e){}
+  try{await fetch('http://unseb.xo.je/api/auth.php?action=logout');}catch(e){}
   localStorage.removeItem('unseb_session');
   window.location.href='login.html';
 }
