@@ -428,7 +428,7 @@ let currentCarteData = null;
 (async function init(){
   // Vérifier session
   try{
-    const r=await fetch('http://unseb.xo.je/api/auth.php?action=me');
+    const r=await fetch('https://unseb.xo.je/api/auth.php?action=me');
     const d=await r.json();
     if(!d.success||d.user.role!=='admin'){
       localStorage.removeItem('unseb_session');
@@ -488,8 +488,8 @@ document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click
 async function loadDashboard(){
   try{
     const [mRes,cRes]=await Promise.all([
-      fetch('http://unseb.xo.je/api/membres.php?action=liste').then(r=>r.json()),
-      fetch('http://unseb.xo.je/api/cartes.php?action=liste_admin').then(r=>r.json())
+      fetch('https://unseb.xo.je/api/membres.php?action=liste').then(r=>r.json()),
+      fetch('https://unseb.xo.je/api/cartes.php?action=liste_admin').then(r=>r.json())
     ]);
     if(mRes.success){
       const total=mRes.membres.length;
@@ -555,7 +555,7 @@ async function loadMembres(){
 
 async function validerMembre(id){
   try{
-    const d=await fetch('http://unseb.xo.je/api/membres.php?action=valider',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/membres.php?action=valider',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
     if(!d.success){toast(d.error,'error');return;}
     // Notifier le membre par email
     if(d.emailjs_data){
@@ -571,7 +571,7 @@ async function validerMembre(id){
 async function suspendreMembre(id){
   if(!confirm('Suspendre ce membre ?'))return;
   try{
-    const d=await fetch('http://unseb.xo.je/api/membres.php?action=suspendre',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/membres.php?action=suspendre',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
     if(!d.success){toast(d.error,'error');return;}
     toast('Membre suspendu.');loadMembres();
   }catch(e){toast('Erreur serveur','error');}
@@ -580,7 +580,7 @@ async function suspendreMembre(id){
 async function supprimerMembre(id){
   if(!confirm('Supprimer/refuser ce membre définitivement ?'))return;
   try{
-    const d=await fetch('http://unseb.xo.je/api/membres.php?action=supprimer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/membres.php?action=supprimer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
     if(!d.success){toast(d.error,'error');return;}
     toast('Membre supprimé.');loadMembres();loadDashboard();
   }catch(e){toast('Erreur serveur','error');}
@@ -617,7 +617,7 @@ async function loadInscriptions(){
 
 async function validerInscription(id){
   try{
-    const d=await fetch('http://unseb.xo.je/api/inscriptions.php?action=valider',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/inscriptions.php?action=valider',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
     if(!d.success){toast(d.error,'error');return;}
     if(d.emailjs_data){
       const ej=d.emailjs_data;
@@ -631,7 +631,7 @@ async function validerInscription(id){
 async function refuserInscription(id){
   if(!confirm('Refuser cette inscription ?'))return;
   try{
-    const d=await fetch('http://unseb.xo.je/api/inscriptions.php?action=refuser',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/inscriptions.php?action=refuser',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
     toast(d.success?'Inscription refusée.':d.error,d.success?'success':'error');
     if(d.success)loadInscriptions();
   }catch(e){toast('Erreur serveur','error');}
@@ -642,7 +642,7 @@ async function loadEvenements(){
   const tb=document.getElementById('tbEvenements');
   tb.innerHTML='<tr class="loading-row"><td colspan="6">Chargement…</td></tr>';
   try{
-    const d=await fetch('http://unseb.xo.je/api/evenements.php?action=liste').then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/evenements.php?action=liste').then(r=>r.json());
     if(!d.success){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:#ef4444">'+d.error+'</td></tr>';return;}
     if(!d.evenements.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:rgba(255,255,255,.3)">Aucun événement.</td></tr>';return;}
     const TYPES={academique:'🎓',culturel:'🎭',AG:'🗣️',formation:'💻',autre:'📌'};
@@ -694,7 +694,7 @@ async function saveEvent(){
 
   const action=id?'modifier':'creer';
   try{
-    const d=await fetch('http://unseb.xo.je/api/evenements.php?action='+action,{method:'POST',body:fd}).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/evenements.php?action='+action,{method:'POST',body:fd}).then(r=>r.json());
     if(!d.success){toast(d.error,'error');return;}
     toast(id?'Événement modifié ✅':'Événement créé ✅');
     closeModal('modalEvent');
@@ -708,7 +708,7 @@ async function saveEvent(){
 async function supprimerEvent(id){
   if(!confirm('Supprimer cet événement ?'))return;
   try{
-    const d=await fetch('http://unseb.xo.je/api/evenements.php?action=supprimer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/evenements.php?action=supprimer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
     toast(d.success?'Événement supprimé.':d.error,d.success?'success':'error');
     if(d.success)loadEvenements();
   }catch(e){toast('Erreur serveur','error');}
@@ -719,7 +719,7 @@ async function loadGalerie(){
   const grid=document.getElementById('galerieGrid');
   grid.innerHTML='<p style="padding:20px;color:rgba(255,255,255,.3)">Chargement…</p>';
   try{
-    const d=await fetch('http://unseb.xo.je/api/galerie.php?action=liste').then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/galerie.php?action=liste').then(r=>r.json());
     if(!d.success||!d.galerie.length){grid.innerHTML='<p style="padding:20px;color:rgba(255,255,255,.3)">Aucun média.</p>';return;}
     grid.innerHTML=d.galerie.map(item=>`
       <div class="galerie-item">
@@ -754,7 +754,7 @@ async function uploadGalerie(){
   try{
     const btn=document.querySelector('#modalGalerie .btn-primary');
     btn.disabled=true;btn.textContent='Upload en cours…';
-    const d=await fetch('http://unseb.xo.je/api/galerie.php?action=ajouter',{method:'POST',body:fd}).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/galerie.php?action=ajouter',{method:'POST',body:fd}).then(r=>r.json());
     btn.disabled=false;btn.textContent='Ajouter';
     if(!d.success){toast(d.error,'error');return;}
     toast('Média ajouté à la galerie ✅');
@@ -769,7 +769,7 @@ async function uploadGalerie(){
 async function supprimerMedia(id){
   if(!confirm('Supprimer ce média ?'))return;
   try{
-    const d=await fetch('http://unseb.xo.je/api/galerie.php?action=supprimer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/galerie.php?action=supprimer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json());
     toast(d.success?'Média supprimé.':d.error,d.success?'success':'error');
     if(d.success)loadGalerie();
   }catch(e){toast('Erreur serveur','error');}
@@ -803,7 +803,7 @@ async function loadCartes(){
 
 async function voirCarte(id){
   try{
-    const d=await fetch('http://unseb.xo.je/api/cartes.php?action=telecharger&id='+id).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/cartes.php?action=telecharger&id='+id).then(r=>r.json());
     if(!d.success){toast(d.error,'error');return;}
     currentCarteId=id;
     currentCarteData=d.carte;
@@ -821,7 +821,7 @@ async function voirCarte(id){
 async function changerStatutCarte(){
   const statut=document.getElementById('carteStatutSelect').value;
   try{
-    const d=await fetch('http://unseb.xo.je/api/cartes.php?action=changer_statut',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentCarteId,statut})}).then(r=>r.json());
+    const d=await fetch('https://unseb.xo.je/api/cartes.php?action=changer_statut',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentCarteId,statut})}).then(r=>r.json());
     if(!d.success){toast(d.error,'error');return;}
     if(d.emailjs_data){
       const ej=d.emailjs_data;
@@ -928,7 +928,7 @@ function downloadCarte(){
 
 // ── LOGOUT ──────────────────────────────────────
 async function doLogout(){
-  try{await fetch('http://unseb.xo.je/api/auth.php?action=logout');}catch(e){}
+  try{await fetch('https://unseb.xo.je/api/auth.php?action=logout');}catch(e){}
   localStorage.removeItem('unseb_session');
   window.location.href='login.html';
 }
